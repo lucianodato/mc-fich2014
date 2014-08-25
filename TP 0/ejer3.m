@@ -1,63 +1,80 @@
-function [S,E,x] = estadoplano (Lx,Ly,C)
 
-	//Declaración de variables,operador diferencial L y syms.
-	//Lx y Ly las recibo como parametros.
-	// S es el tensor de tensiones y E el tensor de deformación.
-	//El valor de C es la constante de Young del material. La recibo como parametro.
+%Declaración de variables,operador diferencial L y syms.
+%Lx y Ly las recibo como parametros.
+%S es el tensor de tensiones y E el tensor de deformación.
+%El valor de C es la constante de Young del material. La recibo como parametro.
 
-	u = syms f(x, y);
-	v= syms f(x, y);
 
-	u(x, y)=-0.1*sin(pi/Lx).cos(pi*x/2*Ly);
-	v(x, y)=-0.1*sin(pi/2*Lx).cos(pi*x/Ly);
+%Bordes placa placa
+Lx=1;
+Ly=1;
 
-	x= zeros (1,2); // fuerzas de cuerpo Xi
+%Declaro las variables simbolicas
+symbols
+x=sym("x");
+y=sym("y");
 
-	E= zeros(2,2);
-	S=E;
+%Desplazamientos U(u,v)
+u=-0.1*Sin(pi/Lx)*Cos(pi*x/2*Ly);
+v=-0.1*Sin(pi/2*Lx)*Cos(pi*x/Ly);
 
-	//------__-------
+po = 0.3; % poisson coef. para el metal
+yo=210000; %modulo de young
 
-	//(A)- CALCULO EL TENSOR DE DEFORMACIÓN
+coe = yo / (1-po^2); % factor q multiplica  a los miembros de la matriz D
 
-	Ex=diff(u,'x');
-	Ey=diff(v,'y');
-	Exy=diff(u,'y') + diff(v,'x');
-	Eyx= Exy;
+D = zeros(3,3);
+D(1,1) =1;
+D(1,2) = po;
+D(2,1) = po;
+D(2,2) = 1;
+D(3,3) = (1-po)/2;
 
-	//GRAFICO EL TENSOR DE DEFORMACIÓN. NO SE COMO SE HACE... JE
-		
-	figure(1);
+D= (yo/(1-po^2))*D; % matriz D relación tensión - deformación para elasticidad
 
-		//IMAGINO Q TENGO Q ASIGNARLE VALORES A 'X' E 'Y',ARMAR LA MATRIZ Y GRAFICAR DE ALGUNA MANERA.
-	plot();
+%------__-------
 
-	//------__-------
+%(A)- CALCULO EL TENSOR DE DEFORMACIÓN
+
+Ex=differentiate(u,x);
+Ey=differentiate(v,y);
+Eyx=differentiate(u,y);
+Exy=Eyx;
+
+
+%GRAFICO EL TENSOR DE DEFORMACIÓN. NO SE COMO SE HACE... JE
 	
-	//(B)- CALCULO EL TENSOR DE TENSIONES.
+%figure(1);
 
-	Sx=C*.Ex;
-	Sy=C*Ey;
-	Sxy= C*Exy;
-	Syx= Sxy;
+	%IMAGINO Q TENGO Q ASIGNARLE VALORES A 'X' E 'Y',ARMAR LA MATRIZ Y GRAFICAR DE ALGUNA MANERA.
+%plot();
 
-	//GRAFICO EL TENSOR DE TENSIONES.
-	
-	figure(2);
+%------__-------
 
-		//IMAGINO Q TENGO Q ASIGNARLE VALORES A 'X' E 'Y',ARMAR LA MATRIZ Y GRAFICAR DE ALGUNA MANERA.
-	plot();
+%(B)- CALCULO EL TENSOR DE TENSIONES.
+Sx=coe*Ex;
+Sy=coe*(po*Ex + po*Ey);
 
-	//------__-------
+aux = (1-po)/2;
+Syx= coe*(aux*Eyx + aux*Exy);
+Sxy = Syx;
 
-	//(C)- CALCULO LAS FUERZAS DE CUERPO.
+%GRAFICO EL TENSOR DE TENSIONES.
 
-	dSx=diff(Sx,'x');
-	dSy=diff(Sy,'y');
-	dSxy= diff(Sxy,'y') + diff(Syx,'x');
-	
-	X(1) = - dSx - dSxy ; //Resp. a x
-	X(2) = - dSy - dSyx; // Resp. a y
+%figure(2);
 
-ENDFUNCTION
+	%IMAGINO Q TENGO Q ASIGNARLE VALORES A 'X' E 'Y',ARMAR LA MATRIZ Y GRAFICAR DE ALGUNA MANERA.
+%plot();
+
+%------__-------
+
+%(C)- CALCULO LAS FUERZAS DE CUERPO.
+
+dSx=differentiate(Sx,x);
+dSy=differentiate(Sy,y);
+dSyx= differentiate(Syx,y) + differentiate(Sxy,x);
+dSxy=dSyx;
+
+bx = -1*(dSx + dSxy) ; %Resp. a x
+by = -1*(dSy + dSyx); % Resp. a y
 

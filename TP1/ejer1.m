@@ -28,13 +28,8 @@ switch(opcion)
     f(2) = fi(x(3)) - si(x(3));
 
     a = inv(Kml) * f;
-    %fi original
-    fic(1)=fi(x(2));
-    fic(2)=fi(x(3));
-    %fi capa (aproximado)
-    fit(1)= si(x(2)) + sum(a(1:2).*Nml(x(2),Lx,1));
-    fit(2)= si(x(3)) + sum(a(1:2).*Nml(x(3),Lx,2));
-  case 2
+gir
+    case 2
         % ------------  Galerkin ----------------------
     %Wl = Nl
 
@@ -44,8 +39,8 @@ switch(opcion)
     Kml = zeros(2,2); %inicializo la matriz
     f = zeros(2,1);%inicializo el vector
     
-    Kml(1,1)=-(sin(4*pi)-4*pi)/(8*pi);
-    Kml(2,2)= -(sin(6*pi)-6*pi)/(12*pi);
+    Kml(1,1)=-(sin(4*pi)-4*pi)/(8*pi); %esto es 1/2
+    Kml(2,2)= -(sin(6*pi)-6*pi)/(12*pi);%esto es 1/2
     
     f(1) = -(12*pi*sin((5*pi)/2)+15*sin(2*pi)-30*pi*cos(2*pi)-20*pi*sin((3*pi)/2))/(60*pi^2);
     f(2) = -(45*pi*sin((7*pi)/2)+35*sin(3*pi)-105*pi*cos(3*pi)-63*pi*sin((5*pi)/2))/(315*pi^2);
@@ -56,7 +51,7 @@ endswitch
 
 %una ves obtenido el fit se pueden comparar as graficas
 
-figure(1);
-plot(fic);
-figure(2);
-plot(fit);
+%figure(1);
+%plot(fic);
+%figure(2);
+%plot(fit);

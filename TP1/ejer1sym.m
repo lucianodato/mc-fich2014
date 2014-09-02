@@ -14,7 +14,7 @@ f = zeros(1,2);%inicializo el vector
 
 %Buscamos los pesos a para cada caso
 
-opcion = 2; % 1 - Colocacion Puntual / 2 - Galerkin
+opcion = 1; % 1 - Colocacion Puntual / 2 - Galerkin
 
 switch(opcion)
   case 1
@@ -61,10 +61,14 @@ switch(opcion)
 end
 
 %una ves obtenido el fit se pueden comparar as graficas
-m=[1,2,3,4];
-an = [1,a(1),a(2),2]
+%Funcion original
 fic = 1 + sin(pi/2 .* p);
-fit = p + 1 + sum(an.*sin(pi/Lp * m.*p));
+%Funcion aproximada
+m=[1,2];
+fit(1) = 1;
+fit(2) = p(2) + 1 + sum(a.*sin(pi/Lp * m.*p(2)));
+fit(3) = p(3) + 1 + sum(a.*sin(pi/Lp * m.*p(3)));
+fit(4) = 2;
 
 figure(1);
 plot(fic);

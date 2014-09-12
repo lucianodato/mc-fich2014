@@ -30,26 +30,24 @@ N12=y*(1-y^2);
 N22=(y^2)*(1-y^2);
 N32=(y^3)*(1-y^2);
 N=[N11 N12; N21 N22; N31 N32];
+N2=[N11 N21 N31 N12 N22 N32];
 
 %Inicializo
 Kg=zeros(cant_puntos,cant_puntos);
-fg=zeros(cant_puntos,1);
+fg=zeros(2*cant_puntos,1);
 
 %Galerkin ( Wl = Nl )
+%Esto es la ecuacion 1 y 2 y al final se arma la matriz K que es simetrica por eso solo se calcula la ecuacion 1
 for l=1:cant_puntos
     for m=1:cant_puntos
         LNl=[diff(N(l,1),x,1) 0; 0 diff(N(l,2),y,1); diff(N(l,1),y,1) diff(N(l,2),x,1)];
         LNm=[diff(N(m,1),x,1) 0; 0 diff(N(m,2),y,1); diff(N(m,1),y,1) diff(N(m,2),x,1)];
         Klm=int(int(LNl'*D*LNm,x,a2,a1),y,b2,b1);
-        K(2*l-1:2*l,2*m-1:2*m)=Klm;
+        Kg(2*l-1:2*l,2*m-1:2*m)=Klm;
     end
-    f(l) = 6 * int((1-y^2)*N(l,1)),y,b2,b1);
+    %Para la primera ecuacion vale para la segunda es 0
+    if (l <= cant_puntos)
+        fg(l) = 6 * int((1-y^2)*subs(N(l,1),x,1),y,b2,b1);
+    end
 end
-ag = K\f;%Solucion de Kg*ag=fg
-fi_capa_g = ag'*N'; %Funcion final aproximada con galerkin
-
-%--------Graficos---------
-sol_g=subs(fi_capa_g,[x,y],[X,Y]);
-figure(1);
-mesh(X,Y,sol_g);
-legend('Galerkin debilitado');
+ag = Kg\fg;%Solucion de Kg*ag=fg

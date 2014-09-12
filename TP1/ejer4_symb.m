@@ -30,7 +30,6 @@ N12=y*(1-y^2);
 N22=(y^2)*(1-y^2);
 N32=(y^3)*(1-y^2);
 N=[N11 N12; N21 N22; N31 N32];
-N2=[N11 N21 N31 N12 N22 N32];
 
 %Inicializo
 Kg=zeros(cant_puntos,cant_puntos);

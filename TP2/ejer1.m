@@ -42,10 +42,10 @@ switch inciso
         end
     case 3
         l = [1,5,3,4,2];
-        for i = 1:cant_puntos
-            for j = 1:cant_puntos
+        for i = l(1:cant_puntos)
+            for j = l(1:cant_puntos)
                 %Calculamos Ni y Nj
-                if(l(i)==l(j) || l(i)==l(j)-1 || l(i)==l(j)+1)
+                if(i==j || i==j-1 || i==j+1)
                     Ni = 1;
                     Nj = 1;
                 else

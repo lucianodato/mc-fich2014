@@ -17,17 +17,18 @@ clear
 %               flux load.
 % SideLoad    = [node number i, node number j, normal flux] matrix with
 %               line definition and uniform normal flux applied
-% MixLoad    = [node number i, node number j, normal flux,fixed value] 
+% MixLoad    = [node number i, node number j, normal flux,load value] 
 %               matrix with line definition and uniform normal flux 
 %               applied and restriced temperature restrictions
 % MixLoadelements = elements that have mixload conditions (same order as mixload)
+
 %Mixed Load Conditions initialization %@ Agregado
 h=1;
 mixloadelements = [];
 mixload = [];%Manual completition
 
 %Transient Flag %@ Agregado
-transient = 0;
+transient = 1;
 
 if (transient == 1) %@ Agregado
     % VARIABLES DE ENTRADA INICIAL
@@ -45,10 +46,13 @@ end
 %@ Agregado
 
 file_name = input('Enter the file name :','s');
-
+ 
 tic;                   % Start clock
 ttim = 0;              % Initialize time counter
-run(eval (file_name));      % Read input file
+
+cd('Problems/');
+eval(file_name);      % Read input file
+cd('..');
 
 % Finds basics dimentions
 npnod  = size(coordinates,1);      % Number of nodes
@@ -83,15 +87,15 @@ for ielem = 1 : nelem
         
         [ElemMat,ElemFor] = TrStifCal(coord,dmat,heat); % 3 Nds Triangle
         
-        if (find(mixloadelements == ielem))
+        if (find(mixloadelements == ielem))%is frontier element
             index = find(mixloadelements == ielem);%index of the element in mixload
-            node_i= coordinates(mixload(index,1));%border node of the element
-            node_j= coordinates(mixload(index,2));%border node
+            node_i(1:2)= coordinates(mixload(index,1),:);%border node of the element
+            node_j(1:2)= coordinates(mixload(index,2),:);%border node
             
             %We should know also the node that is not used in order to
             %build the elemental mixload matrix
             if(lnods(1) ~= mixload(index,1) && lnods(1) ~= mixload(index,2))
-                nu_node = 1;
+                nu_node = 1;%not used node
             end
             if(lnods(2) ~= mixload(index,1) && lnods(2) ~= mixload(index,2))
                 nu_node = 2;
@@ -126,7 +130,6 @@ for ielem = 1 : nelem
     for i = 1 : neleq
         force(eqnum(i)) = force(eqnum(i)) + ElemFor(i);
         for j = 1 : neleq
-            
             StifMat(eqnum(i),eqnum(j)) = StifMat(eqnum(i),eqnum(j)) + ...
                 ElemMat(i,j);
             if (transient == 1)
@@ -197,7 +200,7 @@ if (transient == 1)
         end
         
         %@ AGREGADO
-        u(FreeNodes) = euler(StifMat(FreeNodes, FreeNodes), ...
+        u(FreeNodes) = euler_t(StifMat(FreeNodes, FreeNodes), ...
             C_Mat(FreeNodes, FreeNodes), ...
             force(FreeNodes), ...
             dt, ...
@@ -219,11 +222,11 @@ if (transient == 1)
         
         % Compute the stresses
         Strnod = StressCal(dmat,u);
-        
+        %cada tanto saca un resultado para graficar
         if (mod(t/dt, paso_graph) == 0)
             contador = contador + 1;
             
-            ToGiDCal ([ 'results/', file_name, '.', num2str(contador) ],u,reaction,Strnod);
+            ToGiDCal ([ 'Problems/Results/', file_name, '.', num2str(contador) ],u,reaction,Strnod);
         end
         
     end
@@ -236,15 +239,15 @@ else
     reaction = sparse(nndof,1);
     reaction(fix) = StifMat(fix,1:nndof) * u(1:nndof) - force(fix);
     
-    ttim = timingCal('Time  to solve the stifness matrix',ttim); %Reporting time
+    ttim = timingcal('Time  to solve the stifness matrix',ttim); %Reporting time
     
     % Compute the stresses
     Strnod = StressCal(dmat,u);
     
-    ttim = timingCal('Time to  solve the  nodal stresses',ttim); %Reporting time
+    ttim = timingcal('Time to  solve the  nodal stresses',ttim); %Reporting time
     
     % Graphic representation.
-    ToGiDCal (file_name,u,reaction,Strnod);
+    ToGiDCal ([ 'Problems/Results/', file_name],u,reaction,Strnod);
 end
 
 ttim = timingcal('Time  used to write  the  solution',ttim); %Reporting time

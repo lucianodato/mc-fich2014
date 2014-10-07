@@ -35,7 +35,10 @@ file_name = input('Enter the file name :','s');
 
 tic;                   % Start clock
 ttim = 0;              % Initialize time counter
-run (eval (file_name));      % Read input file
+
+cd('Problems/');
+eval (file_name);      % Read input file
+cd('..');
 
 % Finds basics dimensions
 npnod  = size(coordinates,1);        % Number of nodes
@@ -87,6 +90,7 @@ for ielem = 1 : nelem
 end  % End element loop
 
 ttim = timing('Time to assamble the global system',ttim); %Reporting time
+
 %  Add variabe side forces to the force vector (loads could be functions)
 for i = 1 : size(VariableSideLoad,1)
     syms x y;
@@ -206,7 +210,7 @@ Strnod = Stress(dmat,poiss,thick,pstrs,u);
 ttim = timing('Time to  solve the  nodal stresses',ttim); %Reporting time
 
 % Graphic representation.
-ToGiD (['results/', file_name],u,reaction,Strnod);
+ToGiD (['Problems/Results/', file_name],u,reaction,Strnod);
 
 ttim = timing('Time  used to write  the  solution',ttim); %Reporting time
 itim = toc;                                               %Close last tic

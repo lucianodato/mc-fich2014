@@ -24,8 +24,8 @@ function ToGiDCal (file_name,u,reaction,Strnod)
     eletyp = 'Quadrilateral';
   end
 
-  msh_file = strcat(file_name,'.flavia.msh');
-  res_file = strcat(file_name,'.flavia.res');
+  msh_file = strcat(file_name,'.Results.msh');
+  res_file = strcat(file_name,'.Results.res');
   
   fid = fopen(msh_file,'w');
   fprintf(fid,'### \n');

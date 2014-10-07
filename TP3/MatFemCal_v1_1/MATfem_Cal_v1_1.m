@@ -17,11 +17,19 @@ clear
 %               flux load.
 % SideLoad    = [node number i, node number j, normal flux] matrix with
 %               line definition and uniform normal flux applied
+% MixLoad    = [node number i, node number j, normal flux,fixed value] 
+%               matrix with line definition and uniform normal flux 
+%               applied and restriced temperature restrictions
+% MixLoadelements = elements that have mixload conditions (same order as mixload)
+%Mixed Load Conditions initialization %@ Agregado
+h=1;
+mixloadelements = [];
+mixload = [];%Manual completition
 
-%Transient Flag
+%Transient Flag %@ Agregado
 transient = 0;
 
-if (transient == 1)
+if (transient == 1) %@ Agregado
     % VARIABLES DE ENTRADA INICIAL
     
     rho = 7897;
@@ -32,8 +40,9 @@ if (transient == 1)
     paso_graph = floor((tmax/dt+1)/10);
     
     flag_euler = 1; % 0 forward, 1 backward, 2 crank-nicholson
-end
+end 
 % FIN VARIABLES
+%@ Agregado
 
 file_name = input('Enter the file name :','s');
 
@@ -71,12 +80,37 @@ for ielem = 1 : nelem
     
     % Evaluates the elemental stiffnes matrix and mass force vector.
     if (nnode == 3)
+        
         [ElemMat,ElemFor] = TrStifCal(coord,dmat,heat); % 3 Nds Triangle
+        
+        if (find(mixloadelements == ielem))
+            index = find(mixloadelements == ielem);%index of the element in mixload
+            node_i= coordinates(mixload(index,1));%border node of the element
+            node_j= coordinates(mixload(index,2));%border node
+            
+            %We should know also the node that is not used in order to
+            %build the elemental mixload matrix
+            if(lnods(1) ~= mixload(index,1) && lnods(1) ~= mixload(index,2))
+                nu_node = 1;
+            end
+            if(lnods(2) ~= mixload(index,1) && lnods(2) ~= mixload(index,2))
+                nu_node = 2;
+            end
+            if(lnods(3) ~= mixload(index,1) && lnods(3) ~= mixload(index,2))
+                nu_node = 3;
+            end
+            
+            ElemMat = ElemMat + TrStifCalmix(h,node_i,node_j,nu_node); %mixload part of the stiffness matrix is added
+        end
+        
         if (transient == 1)
             [Elem_C_Mat] = obtener_C_mat_tri(coord, rho, cp);% @Agregado
         end
     else
         [ElemMat,ElemFor] = QdStifCal(coord,dmat,heat); % 4 Nds Quad.
+        
+        %falta condiciones mixtas para cuadrangulos
+        
         if (transient == 1)
             [Elem_C_Mat] = obtener_C_mat_quad(coord, rho, cp);% @Agregado
         end
@@ -105,6 +139,17 @@ for ielem = 1 : nelem
 end  % End element cicle
 
 ttim = timingcal('Time to assamble the global system',ttim); %Reporting time
+
+%  Add mix side forces to the force vector %@ Agregado
+for i = 1 : size(mixload,1)
+    x=coordinates(mixload(i,1),:)-coordinates(mixload(i,2),:);
+    l = sqrt(x*transpose(x));       % Finds the lenght of the side
+    ieqn = mixload(i,1);           % Finds eq. number for the first node
+    force(ieqn) = force(ieqn) + l*mixload(i,3)/2 + h*(l/2)*mixload(i,4);% add puntual heat
+    
+    ieqn = mixload(i,2);            % Finds eq. number for the second node
+    force(ieqn) = force(ieqn) + l*mixload(i,3)/2 + h*(l/2)*mixload(i,4);% add puntual heat
+end %@ Agregado
 
 %  Add side forces to the force vector
 for i = 1 : size(sideload,1)

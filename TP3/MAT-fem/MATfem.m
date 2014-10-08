@@ -27,8 +27,12 @@ clear
 %               nodal loads.
 
 %Manual filling of variablesideload forces
+syms x y;
+x_function = -25/2 * x + 10; 
 midpointload = [];
-variablesideload = [];
+variablesideload = [
+      3  ,      1  ,    0.00000  ,   x_function , 10;
+      7  ,      3  ,    0.00000  ,   x_function, 12];
 
 %Carga de archivo
 file_name = input('Enter the file name :','s');
@@ -92,8 +96,8 @@ end  % End element loop
 ttim = timing('Time to assamble the global system',ttim); %Reporting time
 
 %  Add variabe side forces to the force vector (loads could be functions)
-for i = 1 : size(VariableSideLoad,1)
-    syms x y;
+for i = 1 : size(variablesideload,1)
+    %syms x y;
     if (nnode == 3)
         %Area del triangulo (con las cordenadas de cada nodo de elemento)
         xi = coordinates(variablesideload(i,1),1);
@@ -137,7 +141,7 @@ end
 
 %  Add midpoint loads conditions to the force vector
 for i = 1 : size(midpointload,1)
-    syms x y;
+    %syms x y;
     if (nnode == 3)
         %Area del triangulo (con las cordenadas de cada nodo de elemento)
         xi = coordinates(elements(midpointload(i,5),1),1);

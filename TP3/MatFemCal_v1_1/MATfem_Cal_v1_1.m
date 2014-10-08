@@ -17,14 +17,12 @@ clear
 %               flux load.
 % SideLoad    = [node number i, node number j, normal flux] matrix with
 %               line definition and uniform normal flux applied
-% MixLoad    = [node number i, node number j, normal flux,load value] 
+% MixLoad    = [node number i, node number j, normal flux,load value, element number] 
 %               matrix with line definition and uniform normal flux 
 %               applied and restriced temperature restrictions
-% MixLoadelements = elements that have mixload conditions (same order as mixload)
 
 %Mixed Load Conditions initialization %@ Agregado
-h=1;
-mixloadelements = [];
+h=1;%pelicular coefficient
 mixload = [];%Manual completition
 
 %Transient Flag %@ Agregado
@@ -87,8 +85,8 @@ for ielem = 1 : nelem
         
         [ElemMat,ElemFor] = TrStifCal(coord,dmat,heat); % 3 Nds Triangle
         
-        if (find(mixloadelements == ielem))%is frontier element
-            index = find(mixloadelements == ielem);%index of the element in mixload
+        if (size(mixload,1) > 0 && find(mixload(:,5) == ielem))%is frontier element
+            index = find(mixload(:,5) == ielem);%index of the element in mixload
             node_i(1:2)= coordinates(mixload(index,1),:);%border node of the element
             node_j(1:2)= coordinates(mixload(index,2),:);%border node
             

@@ -28,10 +28,11 @@ clear
 
 %Manual filling of variablesideload forces
 syms x y;
-x_function = (-25/2) * x + 10; 
-midpointload = [0.7 , 0.10 , 1000000.0 , 0.0 , 7];
+x_function = (25/2) * x - 10; 
+midpointload = [];
+%midpointload = [0.7 , 0.10 ,10000000000000.0 , 0.0 , 7];
 variablesideload = [
-      3  ,      1  ,    0.00000  ,   x_function , 10;
+      3  ,      1  ,    0.00000  ,   x_function, 10;
       7  ,      3  ,    0.00000  ,   x_function, 12];
 
 %Carga de archivo
@@ -97,29 +98,59 @@ ttim = timing('Time to assamble the global system',ttim); %Reporting time
 
 %  Add variabe side forces to the force vector (loads could be functions)
 for i = 1 : size(variablesideload,1)
-    %syms x y;
     if (nnode == 3)
         %Area del triangulo (con las cordenadas de cada nodo de elemento)
         xi = coordinates(variablesideload(i,1),1);
         yi = coordinates(variablesideload(i,1),2);
         xj = coordinates(variablesideload(i,2),1);
         yj = coordinates(variablesideload(i,2),2);
-        xk = coordinates(elements(variablesideload(i,5),3),1);%Seguro que el nodo 3 no es ninguno de los anteriores
-        yk = coordinates(elements(variablesideload(i,5),3),2);
+        
+        %The other node correspond to k index
+        if (variablesideload(i,1) ~= elements(variablesideload(i,5),2) && variablesideload(i,1) ~= elements(variablesideload(i,5),2))
+            k = 1;%not used will not distribute its force
+        end
+        if (variablesideload(i,2) ~= elements(variablesideload(i,5),1) && variablesideload(i,1) ~= elements(variablesideload(i,5),3))
+            k = 2;
+        end
+        if (variablesideload(i,3) ~= elements(variablesideload(i,5),1) && variablesideload(i,1) ~= elements(variablesideload(i,5),2))
+            k = 3;
+        end
+        
+        xk = coordinates(elements(variablesideload(i,5),k),1);
+        yk = coordinates(elements(variablesideload(i,5),k),2);
         
         A = 1/2* det([1 xi yi;1 xj yj;1 xk yk]);
         %Familia de forma triangular
-        Ni = (1/2*A)* ((xj*yk-xk*yj) + (yj-yk)*x + (xk-xj)*y);
-        Nj = (1/2*A)* ((xk*yi-yk*xi) + (yk-yi)*x + (xk-xi)*y);
+        Ni = (1/2*A)* ((xj*yk-xk*yj) + (yj-yk)*x + (xk-xj)*y);%symbolic
+        Nj = (1/2*A)* ((xk*yi-yk*xi) + (yk-yi)*x + (xi-xk)*y);
+        Nk = (1/2*A)* ((xi*yj-yi*xj) + (yi-yj)*x + (xj-xi)*y);
         
-        ieqn = variablesideload(i,1)*2;         % Finds eq. number for the first node
-        force(ieqn-1) = force(ieqn-1) + int(subs(Ni*variablesideload(i,3),x,xi),y,yi,yj);   % add x force
-        force(ieqn  ) = force(ieqn  ) + int(subs(Ni*variablesideload(i,4),y,yi),x,xi,xj);   % add y force
-        
-        ieqn = variablesideload(i,2)*2;         % Finds eq. number for the second node
-        force(ieqn-1) = force(ieqn-1) + int(subs(Nj*variablesideload(i,3),x,xj),y,yi,yj);   % add x force
-        force(ieqn  ) = force(ieqn  ) + int(subs(Nj*variablesideload(i,4),y,yj),x,xi,xj);   % add y force
-        
+        switch k
+            case 1
+                ieqn = variablesideload(i,1)*2;         % Finds eq. number for the first node
+                force(ieqn-1) = force(ieqn-1) + int(subs(Nj*variablesideload(i,3),x,xj),y,min(yj,yk),max(yj,yk));   % add x force
+                force(ieqn  ) = force(ieqn  ) + int(subs(Nj*variablesideload(i,4),y,yj),x,min(xj,xk),max(xj,xk));   % add y force
+                
+                ieqn = variablesideload(i,2)*2;         % Finds eq. number for the second node
+                force(ieqn-1) = force(ieqn-1) + int(subs(Nk*variablesideload(i,3),x,xk),y,min(yj,yk),max(yj,yk));   % add x force
+                force(ieqn  ) = force(ieqn  ) + int(subs(Nk*variablesideload(i,4),y,yk),x,min(xj,xk),max(xj,xk));   % add y force
+            case 2
+                ieqn = variablesideload(i,1)*2;         % Finds eq. number for the first node
+                force(ieqn-1) = force(ieqn-1) + int(subs(Ni*variablesideload(i,3),x,xi),y,min(yi,yk),max(yi,yk));   % add x force
+                force(ieqn  ) = force(ieqn  ) + int(subs(Ni*variablesideload(i,4),y,yi),x,min(xi,xk),max(xi,xk));   % add y force
+                
+                ieqn = variablesideload(i,2)*2;         % Finds eq. number for the second node
+                force(ieqn-1) = force(ieqn-1) + int(subs(Nk*variablesideload(i,3),x,xk),y,min(yi,yk),max(yi,yk));   % add x force
+                force(ieqn  ) = force(ieqn  ) + int(subs(Nk*variablesideload(i,4),y,yk),x,min(xi,xk),max(xi,xk));   % add y force
+            case 3
+                ieqn = variablesideload(i,1)*2;         % Finds eq. number for the first node
+                force(ieqn-1) = force(ieqn-1) + int(subs(Ni*variablesideload(i,3),x,xi),y,min(yi,yj),max(yi,yj));   % add x force
+                force(ieqn  ) = force(ieqn  ) + int(subs(Ni*variablesideload(i,4),y,yi),x,min(xi,xj),max(xi,xj));   % add y force
+                
+                ieqn = variablesideload(i,2)*2;         % Finds eq. number for the second node
+                force(ieqn-1) = force(ieqn-1) + int(subs(Nj*variablesideload(i,3),x,xj),y,min(yi,yj),max(yi,yj));   % add x force
+                force(ieqn  ) = force(ieqn  ) + int(subs(Nj*variablesideload(i,4),y,yj),x,min(xi,xj),max(xi,xj));   % add y force
+        end
     else
         %Mismo que lo anterior pero para cuadrangulos
     end
@@ -141,7 +172,6 @@ end
 
 %  Add midpoint loads conditions to the force vector
 for i = 1 : size(midpointload,1)
-    %syms x y;
     if (nnode == 3)
         %Area del triangulo (con las cordenadas de cada nodo de elemento)
         xi = coordinates(elements(midpointload(i,5),1),1);
@@ -154,7 +184,7 @@ for i = 1 : size(midpointload,1)
         A = 1/2* det([1 xi yi;1 xj yj;1 xk yk]);
         %Familia de forma triangular
         Ni = (1/2*A)* ((xj*yk-xk*yj) + (yj-yk)*x + (xk-xj)*y);
-        Nj = (1/2*A)* ((xk*yi-yk*xi) + (yk-yi)*x + (xk-xi)*y);
+        Nj = (1/2*A)* ((xk*yi-yk*xi) + (yk-yi)*x + (xi-xk)*y);
         Nk = (1/2*A)* ((xi*yj-yi*xj) + (yi-yj)*x + (xj-xi)*y);
         N1= subs(Ni,[x,y],[midpointload(i,1),midpointload(i,2)]);
         N2= subs(Nj,[x,y],[midpointload(i,1),midpointload(i,2)]);

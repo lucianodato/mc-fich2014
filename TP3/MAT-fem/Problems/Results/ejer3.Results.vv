@@ -1,12 +1,12 @@
 BeginZE /media/Disco/Informatica/Mecanica Computacional/Practicas/mc-fich2014/TP3/MAT-fem/Problems/Results/ejer3.Results.vv
-   x -0.58045119047164917 1.38045120239257812
-   y 0.587330877780914307 -0.307330846786499023
-   z -1.33281660079956055 1.33281660079956055
-   e 0.44427219033241272
+   x -38.0932159423828125 38.0932159423828125
+   y 17.3205089569091797 -17.3205089569091797
+   z -51.9615249633789062 51.9615249633789062
+   e 17.3205089569091797
    v 0 0 0
    r 1
    m 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
-   c 0.400000005960464478 0.140000000596046448 0
+   c 0 0 0
    pd 0
    pno 0
    pfo 0
@@ -39,26 +39,10 @@ EndMirror
 BeginPostState
 BeginSingleMesh
   Num meshes: 0
-  Num sets: 1
+  Num sets: 0
   Num cuts: 0
-  Set: 0
-  State: On
-    Name: "SurfaceMesh 1"
-    IdSet: 1
-    Color Type: 0
-    Color Ambient: 0.2 0.2 0.2 0.5
-    Color Diffuse: 0.6 0.6 0.6 0.5
-    Color Specular: 1 1 1 0.5
-    Color Shininess: 0.5
-    Property Massive: 1
-    Property Transparent: 0
-    Property Style: 786445
-    Property Edge Width: 1
-    Property Vector Filter Factor: 0
-    Property Stream Arrow: 0
-  EndSet: 0
 EndSingleMesh
   Post_Prefs_Vector_Size: 0 32 32 32
-  ResultView: {Id 29} {Display Vectors} Load_Analysis 1.0 Displacements |Displacements| 3365178.75 4 0
+  ResultView: {Id 23} {No results} {} {} {} {} 4 0
 EndPostState
 

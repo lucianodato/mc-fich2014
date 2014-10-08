@@ -29,9 +29,7 @@ elements = [
 % Fixed Nodes
 %
 fixnodes = [
-      1  ,    50.00000  ;
-      3  ,    0.00000  ; 
-      4  ,    0.00000] ;
+      1  ,    50.00000 ] ;
 %
 % Punctual Fluxes
 %
@@ -40,6 +38,6 @@ pointload = [ ] ;
 % Side loads
 %
 sideload = [
-      2  ,      4  ,    0.00000   ;
-      1  ,      2  ,    2.00000  ];
+      2  ,      4  ,    2.00000   ;
+      1  ,      2  ,    0.00000  ];
 

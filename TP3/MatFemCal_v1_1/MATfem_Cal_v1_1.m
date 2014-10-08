@@ -23,10 +23,10 @@ clear
 
 %Mixed Load Conditions initialization %@ Agregado
 h=1;%pelicular coefficient
-mixload = [];%Manual completition
+mixload = [4,3,2,-50,1];%Manual completition
 
 %Transient Flag %@ Agregado
-transient = 1;
+transient = 0;
 
 if (transient == 1) %@ Agregado
     % VARIABLES DE ENTRADA INICIAL
@@ -38,7 +38,7 @@ if (transient == 1) %@ Agregado
     contador = 0;
     paso_graph = floor((tmax/dt+1)/10);
     
-    flag_euler = 1; % 0 forward, 1 backward, 2 crank-nicholson
+    flag_metodo = 1; % 0 fordward, 1 backward, 2 crank-nicholson
 end 
 % FIN VARIABLES
 %@ Agregado
@@ -85,7 +85,7 @@ for ielem = 1 : nelem
         
         [ElemMat,ElemFor] = TrStifCal(coord,dmat,heat); % 3 Nds Triangle
         
-        if (size(mixload,1) > 0 && find(mixload(:,5) == ielem))%is frontier element
+        if ((size(mixload,1) > 0) && ~isempty(find(mixload(:,5) == ielem,1)))%is frontier element
             index = find(mixload(:,5) == ielem);%index of the element in mixload
             node_i(1:2)= coordinates(mixload(index,1),:);%border node of the element
             node_j(1:2)= coordinates(mixload(index,2),:);%border node
@@ -193,29 +193,47 @@ if (transient == 1)
         
         if (t == 0)
             u_anterior = zeros(size(force));
+            f_act = zeros(size(force));
+            
+            if(flag_metodo ~= 0) % Este paso inicial es importante tanto para CN como para BE.
+                u_aux = metodo_calculo_temporal(StifMat(FreeNodes, FreeNodes), ...
+                    C_Mat(FreeNodes, FreeNodes), ...
+                    force(FreeNodes), ...
+                    dt, ...
+                    u_anterior(FreeNodes), ...
+                    f_act, ...
+                    0); %
+                f_act = StifMat*u + (u_aux-u)/dt; % Este es el valor de la fuerza en el tiempo siguiente
+            end
         else
+            f_act = StifMat*u + (u-u_anterior)/dt;
             u_anterior = u;
         end
         
         %@ AGREGADO
-        u(FreeNodes) = euler_t(StifMat(FreeNodes, FreeNodes), ...
+        u(FreeNodes) = metodo_calculo_temporal(StifMat(FreeNodes, FreeNodes), ...
             C_Mat(FreeNodes, FreeNodes), ...
             force(FreeNodes), ...
             dt, ...
             u_anterior(FreeNodes), ...
-            flag_euler);
+            f_act(FreeNodes), ...
+            flag_metodo);
         
         %  Compute the reactions on the fixed nodes as a R = StifMat * u - F
         reaction = sparse(nndof,1);
         
-        if (flag_euler) % backward
-            reaction(fix) = StifMat(fix,1:nndof) * u(1:nndof) + ...
-                + C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - force(fix);
-            
-        else % forward
-            reaction(fix) = StifMat(fix,1:nndof) * u_anterior(1:nndof) + ...
-                + C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - force(fix);
+        switch flag_metodo
+            case 0 % forward
+                reaction(fix) = StifMat(fix,1:nndof) * u_anterior(1:nndof) + ...
+                    + C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - force(fix);
+            case 1 % backward
+                reaction(fix) = StifMat(fix,1:nndof) * u(1:nndof) + ...
+                    + C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - f_act(fix);
+            otherwise % CN
+                reaction(fix) = 0.5*StifMat(fix,1:nndof) * (u(1:nndof) + u_anterior(1:nndof)) + ...
+                    + C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - 0.5*(f_act(fix) + force(fix));
         end
+        
         ttim = timingcal('Time  to solve the stifness matrix',ttim); %Reporting time
         
         % Compute the stresses

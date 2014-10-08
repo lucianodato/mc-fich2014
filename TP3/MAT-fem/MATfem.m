@@ -28,8 +28,8 @@ clear
 
 %Manual filling of variablesideload forces
 syms x y;
-x_function = -25/2 * x + 10; 
-midpointload = [];
+x_function = (-25/2) * x + 10; 
+midpointload = [0.7 , 0.10 , 1000000.0 , 0.0 , 7];
 variablesideload = [
       3  ,      1  ,    0.00000  ,   x_function , 10;
       7  ,      3  ,    0.00000  ,   x_function, 12];
@@ -113,12 +113,12 @@ for i = 1 : size(variablesideload,1)
         Nj = (1/2*A)* ((xk*yi-yk*xi) + (yk-yi)*x + (xk-xi)*y);
         
         ieqn = variablesideload(i,1)*2;         % Finds eq. number for the first node
-        force(ieqn-1) = force(ieqn-1) + int(subs(Ni*variablesideload(i,3),y,yi),x,xi,xj);   % add x force
-        force(ieqn  ) = force(ieqn  ) + int(subs(Ni*variablesideload(i,4),x,xi),y,yi,yj);   % add y force
+        force(ieqn-1) = force(ieqn-1) + int(subs(Ni*variablesideload(i,3),x,xi),y,yi,yj);   % add x force
+        force(ieqn  ) = force(ieqn  ) + int(subs(Ni*variablesideload(i,4),y,yi),x,xi,xj);   % add y force
         
         ieqn = variablesideload(i,2)*2;         % Finds eq. number for the second node
-        force(ieqn-1) = force(ieqn-1) + int(subs(Nj*variablesideload(i,3),y,yj),x,xi,xj);   % add x force
-        force(ieqn  ) = force(ieqn  ) + int(subs(Nj*variablesideload(i,4),x,xj),y,yi,yj);   % add y force
+        force(ieqn-1) = force(ieqn-1) + int(subs(Nj*variablesideload(i,3),x,xj),y,yi,yj);   % add x force
+        force(ieqn  ) = force(ieqn  ) + int(subs(Nj*variablesideload(i,4),y,yj),x,xi,xj);   % add y force
         
     else
         %Mismo que lo anterior pero para cuadrangulos

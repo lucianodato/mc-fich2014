@@ -6,7 +6,7 @@
 %
 %  Material Properties
 %
-  young =   210000000000.00000 ;
+  young =         200000.00000 ;
   poiss =              0.30000 ;
   denss =           7850.00000 ;
   pstrs =                    1 ;

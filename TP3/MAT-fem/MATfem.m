@@ -28,7 +28,7 @@ clear
 
 %Manual filling of variablesideload forces
 syms x y;
-x_function = (25/2) * x - 10; 
+x_function = (25/2) * x - 10000000000000000000.0; 
 midpointload = [];
 %midpointload = [0.7 , 0.10 ,10000000000000.0 , 0.0 , 7];
 variablesideload = [
@@ -100,24 +100,28 @@ ttim = timing('Time to assamble the global system',ttim); %Reporting time
 for i = 1 : size(variablesideload,1)
     if (nnode == 3)
         %Area del triangulo (con las cordenadas de cada nodo de elemento)
-        xi = coordinates(variablesideload(i,1),1);
-        yi = coordinates(variablesideload(i,1),2);
-        xj = coordinates(variablesideload(i,2),1);
-        yj = coordinates(variablesideload(i,2),2);
+        %element node
+        node_1 = elements(variablesideload(i,5),1);
+        node_2 = elements(variablesideload(i,5),2);
+        node_3 = elements(variablesideload(i,5),3);
         
-        %The other node correspond to k index
-        if (variablesideload(i,1) ~= elements(variablesideload(i,5),2) && variablesideload(i,1) ~= elements(variablesideload(i,5),2))
-            k = 1;%not used will not distribute its force
-        end
-        if (variablesideload(i,2) ~= elements(variablesideload(i,5),1) && variablesideload(i,1) ~= elements(variablesideload(i,5),3))
-            k = 2;
-        end
-        if (variablesideload(i,3) ~= elements(variablesideload(i,5),1) && variablesideload(i,1) ~= elements(variablesideload(i,5),2))
-            k = 3;
-        end
+        xi = coordinates(node_1,1);
+        yi = coordinates(node_1,2);
+        xj = coordinates(node_2,1);
+        yj = coordinates(node_2,2);
+        xk = coordinates(node_3,1);
+        yk = coordinates(node_3,2);
         
-        xk = coordinates(elements(variablesideload(i,5),k),1);
-        yk = coordinates(elements(variablesideload(i,5),k),2);
+        %not used node
+        if(variablesideload(i,1) ~= node_1 && variablesideload(i,2) ~= node_1)
+            nu_node = 1;
+        end
+        if(variablesideload(i,1) ~= node_2 && variablesideload(i,2) ~= node_2)
+            nu_node = 2;
+        end
+        if(variablesideload(i,1) ~= node_3 && variablesideload(i,2) ~= node_3)
+            nu_node = 3;
+        end
         
         A = 1/2* det([1 xi yi;1 xj yj;1 xk yk]);
         %Familia de forma triangular
@@ -125,8 +129,8 @@ for i = 1 : size(variablesideload,1)
         Nj = (1/2*A)* ((xk*yi-yk*xi) + (yk-yi)*x + (xi-xk)*y);
         Nk = (1/2*A)* ((xi*yj-yi*xj) + (yi-yj)*x + (xj-xi)*y);
         
-        switch k
-            case 1
+        switch nu_node
+            case 1 %node i is not used 
                 ieqn = variablesideload(i,1)*2;         % Finds eq. number for the first node
                 force(ieqn-1) = force(ieqn-1) + int(subs(Nj*variablesideload(i,3),x,xj),y,min(yj,yk),max(yj,yk));   % add x force
                 force(ieqn  ) = force(ieqn  ) + int(subs(Nj*variablesideload(i,4),y,yj),x,min(xj,xk),max(xj,xk));   % add y force
@@ -134,7 +138,7 @@ for i = 1 : size(variablesideload,1)
                 ieqn = variablesideload(i,2)*2;         % Finds eq. number for the second node
                 force(ieqn-1) = force(ieqn-1) + int(subs(Nk*variablesideload(i,3),x,xk),y,min(yj,yk),max(yj,yk));   % add x force
                 force(ieqn  ) = force(ieqn  ) + int(subs(Nk*variablesideload(i,4),y,yk),x,min(xj,xk),max(xj,xk));   % add y force
-            case 2
+            case 2 %node j is not used 
                 ieqn = variablesideload(i,1)*2;         % Finds eq. number for the first node
                 force(ieqn-1) = force(ieqn-1) + int(subs(Ni*variablesideload(i,3),x,xi),y,min(yi,yk),max(yi,yk));   % add x force
                 force(ieqn  ) = force(ieqn  ) + int(subs(Ni*variablesideload(i,4),y,yi),x,min(xi,xk),max(xi,xk));   % add y force
@@ -142,7 +146,7 @@ for i = 1 : size(variablesideload,1)
                 ieqn = variablesideload(i,2)*2;         % Finds eq. number for the second node
                 force(ieqn-1) = force(ieqn-1) + int(subs(Nk*variablesideload(i,3),x,xk),y,min(yi,yk),max(yi,yk));   % add x force
                 force(ieqn  ) = force(ieqn  ) + int(subs(Nk*variablesideload(i,4),y,yk),x,min(xi,xk),max(xi,xk));   % add y force
-            case 3
+            case 3 %node k is not used 
                 ieqn = variablesideload(i,1)*2;         % Finds eq. number for the first node
                 force(ieqn-1) = force(ieqn-1) + int(subs(Ni*variablesideload(i,3),x,xi),y,min(yi,yj),max(yi,yj));   % add x force
                 force(ieqn  ) = force(ieqn  ) + int(subs(Ni*variablesideload(i,4),y,yi),x,min(xi,xj),max(xi,xj));   % add y force
@@ -152,7 +156,100 @@ for i = 1 : size(variablesideload,1)
                 force(ieqn  ) = force(ieqn  ) + int(subs(Nj*variablesideload(i,4),y,yj),x,min(xi,xj),max(xi,xj));   % add y force
         end
     else
-        %Mismo que lo anterior pero para cuadrangulos
+        %Area del cuadrangulo (con las cordenadas de cada nodo de elemento)
+        
+        %element node
+        node_1 = elements(variablesideload(i,5),1);
+        node_2 = elements(variablesideload(i,5),2);
+        node_3 = elements(variablesideload(i,5),3);
+        node_4 = elements(variablesideload(i,5),4);
+        
+        xi = coordinates(node_1,1);
+        yi = coordinates(node_1,2);
+        xj = coordinates(node_2,1);
+        yj = coordinates(node_2,2);
+        xk = coordinates(node_3,1);
+        yk = coordinates(node_3,2);
+        xh = coordinates(node_4,1);
+        yh = coordinates(node_4,2);
+        
+        %not used nodes
+        if(variablesideload(i,1) ~= node_1 && variablesideload(i,2) ~= node_1)
+            nu_node = [nu_node 1];
+        end
+        if(variablesideload(i,1) ~= node_2 && variablesideload(i,2) ~= node_2)
+            nu_node = [nu_node 2];
+        end
+        if(variablesideload(i,1) ~= node_3 && variablesideload(i,2) ~= node_3)
+            nu_node = [nu_node 3];
+        end
+        if(variablesideload(i,1) ~= node_4 && variablesideload(i,2) ~= node_4)
+            nu_node = [nu_node 4];
+        end
+        
+        %we have both not used nodes now we have to determine what side is
+        %so what are those form function that do not contribute to the
+        %force
+        
+        if (nu_node == [1 2])
+            side = 3;%side 3 is used
+        end
+        if (nu_node == [2 3])
+            side = 4;%side 4 is used
+        end
+        if (nu_node == [3 4])
+            side = 1;%side 1 is used
+        end
+        if (nu_node == [4 1])
+            side = 2;%side 2 is used
+        end
+        
+        
+        l1= sqrt((xj-xi)^2 + (yj-yi)^2);
+        l2= sqrt((xk-xj)^2 + (yk-yj)^2);
+        A = l1*l2;
+        
+        %Familia de forma cuadrangular
+        Ni = ((l1-x)*(l2-y))/(4*l1*l2);%symbolic
+        Nj = ((l1+x)*(l2-y))/(4*l1*l2);
+        Nk = ((l1+x)*(l2+y))/(4*l1*l2);
+        Nh = ((l1-x)*(l2+y))/(4*l1*l2);
+        
+        
+        switch side
+            case 1 %side 1 is used i and j are form functions
+                ieqn = variablesideload(i,1)*2;         % Finds eq. number for the first node
+                force(ieqn-1) = force(ieqn-1) + int(subs(Ni*variablesideload(i,3),x,xi),y,min(yi,yj),max(yi,yi));   % add x force
+                force(ieqn  ) = force(ieqn  ) + int(subs(Ni*variablesideload(i,4),y,yi),x,min(xi,xj),max(xi,xj));   % add y force
+                
+                ieqn = variablesideload(i,2)*2;         % Finds eq. number for the second node
+                force(ieqn-1) = force(ieqn-1) + int(subs(Nj*variablesideload(i,3),x,xj),y,min(yi,yj),max(yi,yj));   % add x force
+                force(ieqn  ) = force(ieqn  ) + int(subs(Nj*variablesideload(i,4),y,yj),x,min(xi,xj),max(xi,xj));   % add y force
+            case 2 %side 1 is used j and k are form functions
+                ieqn = variablesideload(i,1)*2;         % Finds eq. number for the first node
+                force(ieqn-1) = force(ieqn-1) + int(subs(Nj*variablesideload(i,3),x,xj),y,min(yj,yk),max(yj,yk));   % add x force
+                force(ieqn  ) = force(ieqn  ) + int(subs(Nj*variablesideload(i,4),y,yj),x,min(xj,xk),max(xj,xk));   % add y force
+                
+                ieqn = variablesideload(i,2)*2;         % Finds eq. number for the second node
+                force(ieqn-1) = force(ieqn-1) + int(subs(Nk*variablesideload(i,3),x,xk),y,min(yj,yk),max(yj,yk));   % add x force
+                force(ieqn  ) = force(ieqn  ) + int(subs(Nk*variablesideload(i,4),y,yk),x,min(xj,xk),max(xj,xk));   % add y force
+            case 3 %side 1 is used k and h are form functions
+                ieqn = variablesideload(i,1)*2;         % Finds eq. number for the first node
+                force(ieqn-1) = force(ieqn-1) + int(subs(Nk*variablesideload(i,3),x,xk),y,min(yk,yh),max(yk,yh));   % add x force
+                force(ieqn  ) = force(ieqn  ) + int(subs(Nk*variablesideload(i,4),y,yk),x,min(xk,xh),max(xk,xh));   % add y force
+                
+                ieqn = variablesideload(i,2)*2;         % Finds eq. number for the second node
+                force(ieqn-1) = force(ieqn-1) + int(subs(Nh*variablesideload(i,3),x,xh),y,min(yk,yh),max(yk,yh));   % add x force
+                force(ieqn  ) = force(ieqn  ) + int(subs(Nh*variablesideload(i,4),y,yh),x,min(xk,xh),max(xk,xh));   % add y force
+            case 4 %side 1 is used k and i are form functions
+                ieqn = variablesideload(i,1)*2;         % Finds eq. number for the first node
+                force(ieqn-1) = force(ieqn-1) + int(subs(Nh*variablesideload(i,3),x,xh),y,min(yh,yi),max(yh,yi));   % add x force
+                force(ieqn  ) = force(ieqn  ) + int(subs(Nh*variablesideload(i,4),y,yh),x,min(xh,xi),max(xh,xi));   % add y force
+                
+                ieqn = variablesideload(i,2)*2;         % Finds eq. number for the second node
+                force(ieqn-1) = force(ieqn-1) + int(subs(Ni*variablesideload(i,3),x,xi),y,min(yh,yi),max(yh,yi));   % add x force
+                force(ieqn  ) = force(ieqn  ) + int(subs(Ni*variablesideload(i,4),y,yi),x,min(xh,xi),max(xh,xi));   % add y force
+        end
     end
 end
 
@@ -200,12 +297,53 @@ for i = 1 : size(midpointload,1)
         force(ieqn-1) = force(ieqn-1) + N2*midpointload(i,3)*A;   % add x force
         force(ieqn  ) = force(ieqn  ) + N2*midpointload(i,4)*A;   % add y force
         
-        ieqn = elements(midpointload(i,5),3)*2;         % Finds eq. number for the second node
+        ieqn = elements(midpointload(i,5),3)*2;         % Finds eq. number for the third node
         force(ieqn-1) = force(ieqn-1) + N3*midpointload(i,3)*A;   % add x force
         force(ieqn  ) = force(ieqn  ) + N3*midpointload(i,4)*A;   % add y force
         
     else
-        %Mismo que lo anterior pero para cuadrangulos
+        %Area del cuadrangulo (con las cordenadas de cada nodo de elemento)
+        xi = coordinates(elements(midpointload(i,5),1),1);
+        yi = coordinates(elements(midpointload(i,5),1),2);
+        xj = coordinates(elements(midpointload(i,5),2),1);
+        yj = coordinates(elements(midpointload(i,5),2),2);
+        xk = coordinates(elements(midpointload(i,5),3),1);
+        yk = coordinates(elements(midpointload(i,5),3),2);
+        xh = coordinates(elements(midpointload(i,5),4),1);
+        yh = coordinates(elements(midpointload(i,5),4),2);
+        
+        l1= sqrt((xj-xi)^2 + (yj-yi)^2);
+        l2= sqrt((xk-xj)^2 + (yk-yj)^2);
+        A = l1*l2;
+        
+        %Familia de forma cuadrangular
+        Ni = ((l1-x)*(l2-y))/(4*l1*l2);%symbolic
+        Nj = ((l1+x)*(l2-y))/(4*l1*l2);
+        Nk = ((l1+x)*(l2+y))/(4*l1*l2);
+        Nh = ((l1-x)*(l2+y))/(4*l1*l2);
+        
+        N1= subs(Ni,[x,y],[midpointload(i,1),midpointload(i,2)]);
+        N2= subs(Nj,[x,y],[midpointload(i,1),midpointload(i,2)]);
+        N3= subs(Nk,[x,y],[midpointload(i,1),midpointload(i,2)]);
+        N3= subs(Nh,[x,y],[midpointload(i,1),midpointload(i,2)]);
+        
+        %Para cada punto del elemento distribuyo la carga que se situa
+        %entre medio del elemento
+        ieqn = elements(midpointload(i,5),1)*2;         % Finds eq. number for the first node
+        force(ieqn-1) = force(ieqn-1) + N1*midpointload(i,3)*A;   % add x force
+        force(ieqn  ) = force(ieqn  ) + N1*midpointload(i,4)*A;   % add y force
+        
+        ieqn = elements(midpointload(i,5),2)*2;         % Finds eq. number for the second node
+        force(ieqn-1) = force(ieqn-1) + N2*midpointload(i,3)*A;   % add x force
+        force(ieqn  ) = force(ieqn  ) + N2*midpointload(i,4)*A;   % add y force
+        
+        ieqn = elements(midpointload(i,5),3)*2;         % Finds eq. number for the third node
+        force(ieqn-1) = force(ieqn-1) + N3*midpointload(i,3)*A;   % add x force
+        force(ieqn  ) = force(ieqn  ) + N3*midpointload(i,4)*A;   % add y force
+        
+        ieqn = elements(midpointload(i,5),4)*2;         % Finds eq. number for the fourth node
+        force(ieqn-1) = force(ieqn-1) + N4*midpointload(i,3)*A;   % add x force
+        force(ieqn  ) = force(ieqn  ) + N4*midpointload(i,4)*A;   % add y force
     end
 end
 

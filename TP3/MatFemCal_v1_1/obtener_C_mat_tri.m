@@ -17,7 +17,7 @@
 % 
 %      0
 
-function Elem_C_Mat = obtener_C_mat(nodes, rho, cp)
+function Elem_C_Mat = obtener_C_mat_tri(nodes, rho, cp)
 
   b(1) = nodes(2,2) - nodes(3,2);
   b(2) = nodes(3,2) - nodes(1,2);  

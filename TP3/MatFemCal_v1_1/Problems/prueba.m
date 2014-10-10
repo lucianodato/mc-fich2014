@@ -29,7 +29,8 @@ elements = [
 % Fixed Nodes
 %
 fixnodes = [
-      1  ,    50.00000 ] ;
+      1  ,    50.00000 ;
+      3  ,    50.00000 ] ;
 %
 % Punctual Fluxes
 %

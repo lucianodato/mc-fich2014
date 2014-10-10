@@ -5,7 +5,7 @@ clear
 
 % The variables are readed as a MAT-femCal subroutine
 % kx   = Heat transfer coeffcient in x direction
-% kx   = Heat transfer coeffcient in x direction
+% ky   = Heat transfer coeffcient in y direction
 % heat = Heat source per area unit
 % coordinates = [ x , y ] coordinate matrix nnode x ndime (2)
 % elements    = [ inode, jnode, knode ] element conectivities matrix
@@ -17,13 +17,17 @@ clear
 %               flux load.
 % SideLoad    = [node number i, node number j, normal flux] matrix with
 %               line definition and uniform normal flux applied
-% MixLoad    = [node number i, node number j, normal flux,load value, element number] 
+% MixLoad    = [node number i, node number j, load value, pelicular coefficient,element number] 
 %               matrix with line definition and uniform normal flux 
 %               applied and restriced temperature restrictions
-
+% midpointheat   = [xpos , ypos, heat,element] matrix with
+%               nodal loads.
 %Mixed Load Conditions initialization %@ Agregado
-h=1;%pelicular coefficient
-mixload = [4,3,2,-50,1];%Manual completition
+%mixload = [];
+mixload = [ 1  ,  2  ,   30.00000 , 1.2 , 6;
+    2  ,  6  ,   30.00000 , 1.2 , 8];%Manual completition
+
+midpointheat = [1,1,5.0,1];
 
 %Transient Flag %@ Agregado
 transient = 0;
@@ -33,12 +37,16 @@ if (transient == 1) %@ Agregado
     
     rho = 7897;
     cp = 0.108;
-    tmax = 100000;
-    dt = 2000;
+    tmax = 100;
+    %ojo este no puede ser cualquier valor 
+    %alpha= kx/(rho*cp) 
+    %nd = numero de dimensiones (2 en 2D)
+    %dt<= 0.5*paso_menor/(alpha*nd) 
+    dt = 10;
     contador = 0;
     paso_graph = floor((tmax/dt+1)/10);
     
-    flag_metodo = 1; % 0 fordward, 1 backward, 2 crank-nicholson
+    flag_metodo = 2; % 0 fordward, 1 backward, 2 crank-nicholson
 end 
 % FIN VARIABLES
 %@ Agregado
@@ -85,10 +93,10 @@ for ielem = 1 : nelem
         
         [ElemMat,ElemFor] = TrStifCal(coord,dmat,heat); % 3 Nds Triangle
         
-        if ((size(mixload,1) > 0) && ~isempty(find(mixload(:,5) == ielem,1)))%is frontier element
+        if (size(mixload,1) > 0 && ~isempty(find(mixload(:,5) == ielem,1)))%is frontier element
             index = find(mixload(:,5) == ielem);%index of the element in mixload
-            node_i(1:2)= coordinates(mixload(index,1),:);%border node of the element
-            node_j(1:2)= coordinates(mixload(index,2),:);%border node
+            node_i(1:2)= coordinates(mixload(index,1),:);%coordinates of border node in the element
+            node_j(1:2)= coordinates(mixload(index,2),:);%coordinates of border node in the element
             
             %We should know also the node that is not used in order to
             %build the elemental mixload matrix
@@ -102,7 +110,7 @@ for ielem = 1 : nelem
                 nu_node = 3;
             end
             
-            ElemMat = ElemMat + TrStifCalmix(h,node_i,node_j,nu_node); %mixload part of the stiffness matrix is added
+            ElemMat = ElemMat + TrStifCalmix(mixload(index,4),node_i,node_j,nu_node); %mixload part of the stiffness matrix is added
         end
         
         if (transient == 1)
@@ -146,10 +154,10 @@ for i = 1 : size(mixload,1)
     x=coordinates(mixload(i,1),:)-coordinates(mixload(i,2),:);
     l = sqrt(x*transpose(x));       % Finds the lenght of the side
     ieqn = mixload(i,1);           % Finds eq. number for the first node
-    force(ieqn) = force(ieqn) + l*mixload(i,3)/2 + h*(l/2)*mixload(i,4);% add puntual heat
+    force(ieqn) = force(ieqn) - mixload(i,4)*(l/2)*mixload(i,3);% add puntual heat
     
     ieqn = mixload(i,2);            % Finds eq. number for the second node
-    force(ieqn) = force(ieqn) + l*mixload(i,3)/2 + h*(l/2)*mixload(i,4);% add puntual heat
+    force(ieqn) = force(ieqn) - mixload(i,4)*(l/2)*mixload(i,3);% add puntual heat
 end %@ Agregado
 
 %  Add side forces to the force vector
@@ -161,6 +169,79 @@ for i = 1 : size(sideload,1)
     
     ieqn = sideload(i,2);            % Finds eq. number for the second node
     force(ieqn) = force(ieqn) + l*sideload(i,3)/2;      % add puntual heat
+end
+
+%  Add point loads conditions to the force vector
+for i = 1 : size(midpointheat,1)
+    syms x y;
+    if (nnode == 3)
+        %Area del triangulo (con las cordenadas de cada nodo de elemento)
+        xi = coordinates(elements(midpointheat(i,4),1),1);
+        yi = coordinates(elements(midpointheat(i,4),1),2);
+        xj = coordinates(elements(midpointheat(i,4),2),1);
+        yj = coordinates(elements(midpointheat(i,4),2),2);
+        xk = coordinates(elements(midpointheat(i,4),3),1);
+        yk = coordinates(elements(midpointheat(i,4),3),2);
+        
+        A = abs(1/2* det([1 xi yi;1 xj yj;1 xk yk]));
+        %Familia de forma triangular
+        Ni = (1/2*A)* ((xj*yk-xk*yj) + (yj-yk)*x + (xk-xj)*y);
+        Nj = (1/2*A)* ((xk*yi-yk*xi) + (yk-yi)*x + (xi-xk)*y);
+        Nk = (1/2*A)* ((xi*yj-yi*xj) + (yi-yj)*x + (xj-xi)*y);
+        N1= subs(Ni,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
+        N2= subs(Nj,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
+        N3= subs(Nk,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
+        
+        %Para cada punto del elemento distribuyo la carga que se situa
+        %entre medio del elemento
+        ieqn = elements(midpointheat(i,4),1);         % Finds eq. number for the first node
+        force(ieqn) = force(ieqn) + N1*midpointheat(i,3)*A;   % add y force
+        
+        ieqn = elements(midpointheat(i,4),2);         % Finds eq. number for the second node
+        force(ieqn) = force(ieqn) + N2*midpointheat(i,3)*A;   % add y force
+        
+        ieqn = elements(midpointheat(i,4),3);         % Finds eq. number for the third node
+        force(ieqn) = force(ieqn) + N3*midpointheat(i,3)*A;   % add y force
+        
+    else
+        %Area del cuadrangulo (con las cordenadas de cada nodo de elemento)
+        xi = coordinates(elements(midpointheat(i,4),1),1);
+        yi = coordinates(elements(midpointheat(i,4),1),2);
+        xj = coordinates(elements(midpointheat(i,4),2),1);
+        yj = coordinates(elements(midpointheat(i,4),2),2);
+        xk = coordinates(elements(midpointheat(i,4),3),1);
+        yk = coordinates(elements(midpointheat(i,4),3),2);
+        xh = coordinates(elements(midpointheat(i,4),4),1);
+        yh = coordinates(elements(midpointheat(i,4),4),2);
+        
+        l1= sqrt((xj-xi)^2 + (yj-yi)^2);
+        l2= sqrt((xk-xj)^2 + (yk-yj)^2);
+        A = l1*l2;
+        
+        %Familia de forma cuadrangular
+        Ni = ((l1-x)*(l2-y))/(4*l1*l2);%symbolic
+        Nj = ((l1+x)*(l2-y))/(4*l1*l2);
+        Nk = ((l1+x)*(l2+y))/(4*l1*l2);
+        Nh = ((l1-x)*(l2+y))/(4*l1*l2);
+        
+        N1= subs(Ni,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
+        N2= subs(Nj,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
+        N3= subs(Nk,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
+        N3= subs(Nh,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
+        
+        %Para cada punto del elemento distribuyo la carga que se situa
+        %entre medio del elemento
+        ieqn = elements(midpointheat(i,4),1);         % Finds eq. number for the first node
+        
+        ieqn = elements(midpointheat(i,4),2);         % Finds eq. number for the second node
+        force(ieqn) = force(ieqn) + N2*midpointheat(i,3)*A;   % add x force
+        
+        ieqn = elements(midpointheat(i,4),3);         % Finds eq. number for the third node
+        force(ieqn) = force(ieqn) + N3*midpointheat(i,3)*A;   % add x force
+        
+        ieqn = elements(midpointheat(i,4),4);         % Finds eq. number for the fourth node
+        force(ieqn) = force(ieqn) + N4*midpointheat(i,3)*A;   % add x force
+    end
 end
 
 %  Add point loads conditions to the force vector
@@ -180,7 +261,9 @@ for i = 1 : size(fixnodes,1)
 end
 force = force - StifMat * u;       % adjust the rhs with the known values
 
-
+% u now have only fixed conditions loaded inside so we don't touch that
+% and force will have those fixed conditions too
+% we only compute FreeNodes so we could then compute the reaction 
 
 %  Compute the solution by solving StifMat * u = force for the
 %  remaining unknown values of u.
@@ -188,25 +271,13 @@ force = force - StifMat * u;       % adjust the rhs with the known values
 FreeNodes = setdiff ( 1:nndof, fix ); % Finds the free node list and
 % solve for it.
 %If it's a transient problem
-if (transient == 1)
+if (transient == 1)    
     for t = 0 : dt : tmax
         
-        if (t == 0)
+        if (t == 0) % for the first calculation
             u_anterior = zeros(size(force));
-            f_act = zeros(size(force));
-            
-            if(flag_metodo ~= 0) % Este paso inicial es importante tanto para CN como para BE.
-                u_aux = metodo_calculo_temporal(StifMat(FreeNodes, FreeNodes), ...
-                    C_Mat(FreeNodes, FreeNodes), ...
-                    force(FreeNodes), ...
-                    dt, ...
-                    u_anterior(FreeNodes), ...
-                    f_act, ...
-                    0); %
-                f_act = StifMat*u + (u_aux-u)/dt; % Este es el valor de la fuerza en el tiempo siguiente
-            end
         else
-            f_act = StifMat*u + (u-u_anterior)/dt;
+            %we update last steps variables
             u_anterior = u;
         end
         
@@ -216,7 +287,6 @@ if (transient == 1)
             force(FreeNodes), ...
             dt, ...
             u_anterior(FreeNodes), ...
-            f_act(FreeNodes), ...
             flag_metodo);
         
         %  Compute the reactions on the fixed nodes as a R = StifMat * u - F
@@ -224,14 +294,11 @@ if (transient == 1)
         
         switch flag_metodo
             case 0 % forward
-                reaction(fix) = StifMat(fix,1:nndof) * u_anterior(1:nndof) + ...
-                    + C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - force(fix);
+                reaction(fix) = StifMat(fix,1:nndof) * u_anterior(1:nndof) - C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - force(fix);
             case 1 % backward
-                reaction(fix) = StifMat(fix,1:nndof) * u(1:nndof) + ...
-                    + C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - f_act(fix);
+                reaction(fix) = StifMat(fix,1:nndof) * u(1:nndof) - C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - force(fix);
             otherwise % CN
-                reaction(fix) = 0.5*StifMat(fix,1:nndof) * (u(1:nndof) + u_anterior(1:nndof)) + ...
-                    + C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - 0.5*(f_act(fix) + force(fix));
+                reaction(fix) = 0.5*StifMat(fix,1:nndof) * (u(1:nndof) + u_anterior(1:nndof)) - C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - force(fix);
         end
         
         ttim = timingcal('Time  to solve the stifness matrix',ttim); %Reporting time
@@ -239,11 +306,11 @@ if (transient == 1)
         % Compute the stresses
         Strnod = StressCal(dmat,u);
         %cada tanto saca un resultado para graficar
-        if (mod(t/dt, paso_graph) == 0)
+        %if (mod(t/dt, paso_graph) == 0)
             contador = contador + 1;
             
             ToGiDCal ([ 'Problems/Results/', file_name, '.', num2str(contador) ],u,reaction,Strnod);
-        end
+        %end
         
     end
     

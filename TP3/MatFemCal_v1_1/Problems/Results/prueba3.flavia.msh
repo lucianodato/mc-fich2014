@@ -1,0 +1,17 @@
+### 
+# MAT_FEM  V.1.0 
+# 
+MESH dimension   2   Elemtype Triangle   Nnode  3 
+ 
+coordinates 
+     1        00000        00005 
+     2        00000        00000 
+     3        00005        00005 
+     4        00005        00000 
+end coordinates 
+ 
+elements 
+     1      2      1      4   1 
+     2      3      1      4   1 
+end elements 
+ 

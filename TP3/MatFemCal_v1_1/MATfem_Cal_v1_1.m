@@ -22,15 +22,17 @@ clear
 %               applied and restriced temperature restrictions
 % midpointheat   = [xpos , ypos, heat,element] matrix with
 %               nodal loads.
+
 %Mixed Load Conditions initialization %@ Agregado
 %mixload = [];
 mixload = [ 1  ,  2 , 30.00000 , 1.2 , 1];%Manual completition
 
-midpointheat = [1,1,5,1];
+%Nodal heat source %@ Agregado
 %midpointheat = [];
+midpointheat = [1,1,5,1];
 
 %Transient Flag %@ Agregado
-transient = 0;
+transient = 1;
 
 
 if (transient == 1) %@ Agregado
@@ -94,13 +96,13 @@ for ielem = 1 : nelem
         
         [ElemMat,ElemFor] = TrStifCal(coord,dmat,heat); % 3 Nds Triangle
         
-        if (size(mixload,1) > 0 && ~isempty(find(mixload(:,5) == ielem,1)))%is frontier element
+        if (size(mixload,1) > 0 && ~isempty(find(mixload(:,5) == ielem,1)))%is a border element
             index = find(mixload(:,5) == ielem);%index of the element in mixload
             node_i(1:2)= coordinates(mixload(index,1),:);%coordinates of border node in the element
             node_j(1:2)= coordinates(mixload(index,2),:);%coordinates of border node in the element
             
-            %We should know also the node that is not used in order to
-            %build the elemental mixload matrix
+            %We should also know the node that is not used in order to
+            %build the element mixload matrix
             if(lnods(1) ~= mixload(index,1) && lnods(1) ~= mixload(index,2))
                 nu_node = 1;%not used node
             end
@@ -121,7 +123,7 @@ for ielem = 1 : nelem
         [ElemMat,ElemFor] = QdStifCal(coord,dmat,heat); % 4 Nds Quad.
         
         %Condiciones mixtas cuadrangulos
-        if (size(mixload,1) > 0 && ~isempty(find(mixload(:,5) == ielem,1)))%is frontier element
+        if (size(mixload,1) > 0 && ~isempty(find(mixload(:,5) == ielem,1)))%is a border element
             index = find(mixload(:,5) == ielem);%index of the element in mixload
             node_i(1:2)= coordinates(mixload(index,1),:);%coordinates of border node in the element
             node_j(1:2)= coordinates(mixload(index,2),:);%coordinates of border node in the element
@@ -135,20 +137,14 @@ for ielem = 1 : nelem
             if(lnods(1) ~= mixload(index,1) && lnods(1) ~= mixload(index,2) && lnods(2) ~= mixload(index,1) && lnods(2) ~= mixload(index,2))
                 nu_node = 1;%not used nodes (i y j)
             end
-            if(lnods(1) ~= mixload(index,1) && lnods(1) ~= mixload(index,2) && lnods(3) ~= mixload(index,1) && lnods(3) ~= mixload(index,2))    nu_node = 2;
-                nu_node = 2;%not used nodes (i y k)
+            if(lnods(1) ~= mixload(index,1) && lnods(1) ~= mixload(index,2) && lnods(4) ~= mixload(index,1) && lnods(4) ~= mixload(index,2))
+                nu_node = 2;%not used nodes (i y l)
             end
-            if(lnods(1) ~= mixload(index,1) && lnods(1) ~= mixload(index,2) && lnods(4) ~= mixload(index,1) && lnods(4) ~= mixload(index,2))    nu_node = 3;
-                nu_node = 3;%not used nodes (i y l)
+            if(lnods(2) ~= mixload(index,1) && lnods(2) ~= mixload(index,2) && lnods(3) ~= mixload(index,1) && lnods(3) ~= mixload(index,2))
+                nu_node = 3;%not used nodes (j y k)
             end
-            if(lnods(2) ~= mixload(index,1) && lnods(2) ~= mixload(index,2) && lnods(3) ~= mixload(index,1) && lnods(3) ~= mixload(index,2))    nu_node = 3;
-                nu_node = 4;%not used nodes (j y k)
-            end
-            if(lnods(2) ~= mixload(index,1) && lnods(2) ~= mixload(index,2) && lnods(4) ~= mixload(index,1) && lnods(4) ~= mixload(index,2))    nu_node = 3;
-                nu_node = 5;%not used nodes (j y l)
-            end
-            if(lnods(3) ~= mixload(index,1) && lnods(3) ~= mixload(index,2) && lnods(4) ~= mixload(index,1) && lnods(4) ~= mixload(index,2))    nu_node = 3;
-                nu_node = 6;%not used nodes (k y l)
+            if(lnods(3) ~= mixload(index,1) && lnods(3) ~= mixload(index,2) && lnods(4) ~= mixload(index,1) && lnods(4) ~= mixload(index,2))
+                nu_node = 4;%not used nodes (k y l)
             end
             
             ElemMat = ElemMat + QdStifCalmix(mixload(index,4),node_i,node_j,nu_node); %mixload part of the stiffness matrix is added

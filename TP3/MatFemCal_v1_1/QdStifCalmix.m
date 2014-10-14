@@ -17,15 +17,11 @@ l = sqrt((node_i(1)-node_j(1))^2 + (node_i(2)-node_j(2))^2);
 switch nu_node
     case 1 % i y j = 0
         M = h*[0 0 0 0;0 0 0 0;0 0 l/3 l/6;0 0 l/6 l/3];
-    case 2 % i y k = 0
-        M = h*[0 0 0 0;0 l/3 l/6 0;0 0 0 0;0 l/6 l/3 0];
-    case 3 % i y l = 0
+    case 2 % i y l = 0
         M = h*[0 0 0 0;0 l/3 l/6 0;0 l/6 l/3 0;0 0 0 0];
-    case 4 % j y k = 0
+    case 3 % j y k = 0
         M = h*[l/3 0 0 l/6;0 0 0 0;0 0 0 0;l/6 0 0 l/3];
-    case 5 % j y l = 0
-        M = h*[l/3 0 l/6 0;0 0 0 0;l/6 0 l/3 0;0 0 0 0];
-    case 6 % k y l = 0
+    case 4 % k y l = 0
         M = h*[l/3 l/6 0 0;l/6 l/3 0 0;0 0 0 0;0 0 0 0];
 end
 end

@@ -6,10 +6,10 @@
 %
 %  Material Properties
 %
-  young =         200000.00000 ;
-  poiss =              0.30000 ;
-  denss =           7850.00000 ;
-  pstrs =                    1 ;
+  young =   210000000000.00000 ;
+  poiss =              0.20000 ;
+  denss = 0.00 ;
+  pstrs =  1 ;
   thick =              0.10000 ;
 %
 % Coordinates
@@ -68,5 +68,5 @@ pointload = [
 %
 %Uniform Side loads
 %
-sideload = [];
+sideload = [ ];
 

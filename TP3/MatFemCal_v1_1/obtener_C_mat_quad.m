@@ -9,8 +9,26 @@
 
 function Elem_C_Mat = obtener_C_mat_quad(nodes, rho, cp)
 
+<<<<<<< HEAD
         syms chi nu;
 
+=======
+<<<<<<< HEAD
+fform = @(s,t)[(1-s-t+s*t)/4,(1+s-t-s*t)/4,(1+s+t+s*t)/4,(1-s+t-s*t)/4];
+
+pospg = [ -0.577350269189626E+00 , 0.577350269189626E+00 ];
+pespg = [  1.0E+00 , 1.0E+00]; % Esta variable es el peso de wi y wj, pesos relativos a nu y chi en la integración
+M = zeros(4,4);
+
+for i=1 : 2
+    for j=1 : 2
+        lcffm = fform(pospg(i),pospg(j)) ;    % FF at gauss point
+        xjacm = lcffm*nodes ;                 % Jacobian matrix
+        ctder = xjacm\lcffm ;                 % FF Cartesian derivates
+        darea = det(xjacm)*pespg(i)*pespg(j);
+=======
+        %Area del cuadrangulo (con las cordenadas de cada nodo de elemento)
+>>>>>>> de61ad3c078db6a5c085eee4e37eff9d5e4a3c2a
         xi = nodes(1,1);
         yi = nodes(1,2);
         xj = nodes(2,1);
@@ -19,6 +37,7 @@ function Elem_C_Mat = obtener_C_mat_quad(nodes, rho, cp)
         yk = nodes(3,2);
         xl = nodes(4,1);
         yl = nodes(4,2);
+>>>>>>> origin/master
         
         %Familia de forma cuadrangular
         Ni = 1/4 * (1-chi)*(1-nu);%symbolic

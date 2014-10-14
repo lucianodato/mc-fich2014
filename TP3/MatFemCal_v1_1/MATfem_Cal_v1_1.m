@@ -25,11 +25,14 @@ clear
 
 %Mixed Load Conditions initialization %@ Agregado
 %mixload = [];
-mixload = [ 1  ,  2 , 30.00000 , 1.2 , 1];%Manual completition
+mixload = [ 3   ,  1  , 30.00000 , 1.2 , 26;
+            6   ,  3  , 30.00000 , 1.2 , 28;
+            10  ,  6  , 30.00000 , 1.2 , 30;
+            16  ,  10 , 30.00000 , 1.2 , 32];%Manual completition
 
 %Nodal heat source %@ Agregado
-%midpointheat = [];
-midpointheat = [1,1,5,1];
+midpointheat = [];
+%midpointheat = [1,1,5,1];
 
 %Transient Flag %@ Agregado
 transient = 1;

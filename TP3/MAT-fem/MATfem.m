@@ -210,8 +210,8 @@ for i = 1 : size(variablesideload,1)
             side = 2;%side 2 is used
         end
 
-        l1= sqrt((xj-xi)^2 + (yj-yi)^2);
-        l2= sqrt((xk-xj)^2 + (yk-yj)^2);
+        l1= 1/2*sqrt((xj-xi)^2 + (yj-yi)^2);
+        l2= 1/2*sqrt((xk-xj)^2 + (yk-yj)^2);
         A = l1*l2;
         
         %Familia de forma cuadrangular
@@ -318,8 +318,8 @@ for i = 1 : size(midpointload,1)
         xl = coordinates(elements(midpointload(i,5),4),1);
         yl = coordinates(elements(midpointload(i,5),4),2);
         
-        l1= sqrt((xj-xi)^2 + (yj-yi)^2);
-        l2= sqrt((xk-xj)^2 + (yk-yj)^2);
+        l1= 1/2*sqrt((xj-xi)^2 + (yj-yi)^2);
+        l2= 1/2*sqrt((xk-xj)^2 + (yk-yj)^2);
         A = l1*l2;
         
         %Familia de forma cuadrangular

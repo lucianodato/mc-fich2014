@@ -6,16 +6,6 @@
 %    40.0000   51.4286
 %    42.5981   52.8571
 % 
-% 
-% dmat =
-% 
-%     63     0
-%      0    63
-% 
-% 
-% heat =
-% 
-%      0
 
 function Elem_C_Mat = obtener_C_mat_tri(nodes, rho, cp)
 

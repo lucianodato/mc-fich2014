@@ -17,20 +17,21 @@ clear
 %               flux load.
 % SideLoad    = [node number i, node number j, normal flux] matrix with
 %               line definition and uniform normal flux applied
-% MixLoad    = [node number i, node number j, load value, pelicular coefficient,element number] 
-%               matrix with line definition and uniform normal flux 
+% MixLoad    = [node number i, node number j, load value, pelicular coefficient,element number]
+%               matrix with line definition and uniform normal flux
 %               applied and restriced temperature restrictions
 % midpointheat   = [xpos , ypos, heat,element] matrix with
 %               nodal loads.
 %Mixed Load Conditions initialization %@ Agregado
 %mixload = [];
-mixload = [ 1  ,  2  ,   30.00000 , 1.2 , 6;
-    2  ,  6  ,   30.00000 , 1.2 , 8];%Manual completition
+mixload = [ 1  ,  2 , 30.00000 , 1.2 , 1];%Manual completition
 
-midpointheat = [1,1,5.0,1];
+midpointheat = [1,1,5,1];
+%midpointheat = [];
 
 %Transient Flag %@ Agregado
 transient = 0;
+
 
 if (transient == 1) %@ Agregado
     % VARIABLES DE ENTRADA INICIAL
@@ -38,21 +39,21 @@ if (transient == 1) %@ Agregado
     rho = 7897;
     cp = 0.108;
     tmax = 100;
-    %ojo este no puede ser cualquier valor 
-    %alpha= kx/(rho*cp) 
+    %ojo este no puede ser cualquier valor
+    %alpha= kx/(rho*cp)
     %nd = numero de dimensiones (2 en 2D)
-    %dt<= 0.5*paso_menor/(alpha*nd) 
+    %dt<= 0.5*paso_menor/(alpha*nd)
     dt = 10;
     contador = 0;
     paso_graph = floor((tmax/dt+1)/10);
     
     flag_metodo = 2; % 0 fordward, 1 backward, 2 crank-nicholson
-end 
+end
 % FIN VARIABLES
 %@ Agregado
 
 file_name = input('Enter the file name :','s');
- 
+
 tic;                   % Start clock
 ttim = 0;              % Initialize time counter
 
@@ -119,7 +120,39 @@ for ielem = 1 : nelem
     else
         [ElemMat,ElemFor] = QdStifCal(coord,dmat,heat); % 4 Nds Quad.
         
-        %falta condiciones mixtas para cuadrangulos
+        %Condiciones mixtas cuadrangulos
+        if (size(mixload,1) > 0 && ~isempty(find(mixload(:,5) == ielem,1)))%is frontier element
+            index = find(mixload(:,5) == ielem);%index of the element in mixload
+            node_i(1:2)= coordinates(mixload(index,1),:);%coordinates of border node in the element
+            node_j(1:2)= coordinates(mixload(index,2),:);%coordinates of border node in the element
+            
+            %We should know also the node that is not used in order to
+            %build the elemental mixload matrix. In this case we have two
+            %null nodes
+            linea = [mixload(index,1); mixload(index,2)];
+            resto = setdiff(lnods,linea);
+            
+            if(lnods(1) ~= mixload(index,1) && lnods(1) ~= mixload(index,2) && lnods(2) ~= mixload(index,1) && lnods(2) ~= mixload(index,2))
+                nu_node = 1;%not used nodes (i y j)
+            end
+            if(lnods(1) ~= mixload(index,1) && lnods(1) ~= mixload(index,2) && lnods(3) ~= mixload(index,1) && lnods(3) ~= mixload(index,2))    nu_node = 2;
+                nu_node = 2;%not used nodes (i y k)
+            end
+            if(lnods(1) ~= mixload(index,1) && lnods(1) ~= mixload(index,2) && lnods(4) ~= mixload(index,1) && lnods(4) ~= mixload(index,2))    nu_node = 3;
+                nu_node = 3;%not used nodes (i y l)
+            end
+            if(lnods(2) ~= mixload(index,1) && lnods(2) ~= mixload(index,2) && lnods(3) ~= mixload(index,1) && lnods(3) ~= mixload(index,2))    nu_node = 3;
+                nu_node = 4;%not used nodes (j y k)
+            end
+            if(lnods(2) ~= mixload(index,1) && lnods(2) ~= mixload(index,2) && lnods(4) ~= mixload(index,1) && lnods(4) ~= mixload(index,2))    nu_node = 3;
+                nu_node = 5;%not used nodes (j y l)
+            end
+            if(lnods(3) ~= mixload(index,1) && lnods(3) ~= mixload(index,2) && lnods(4) ~= mixload(index,1) && lnods(4) ~= mixload(index,2))    nu_node = 3;
+                nu_node = 6;%not used nodes (k y l)
+            end
+            
+            ElemMat = ElemMat + QdStifCalmix(mixload(index,4),node_i,node_j,nu_node); %mixload part of the stiffness matrix is added
+        end
         
         if (transient == 1)
             [Elem_C_Mat] = obtener_C_mat_quad(coord, rho, cp);% @Agregado
@@ -171,7 +204,7 @@ for i = 1 : size(sideload,1)
     force(ieqn) = force(ieqn) + l*sideload(i,3)/2;      % add puntual heat
 end
 
-%  Add point loads conditions to the force vector
+%  Add midpointheat conditions to the force vector
 for i = 1 : size(midpointheat,1)
     syms x y;
     if (nnode == 3)
@@ -227,7 +260,7 @@ for i = 1 : size(midpointheat,1)
         N1= subs(Ni,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
         N2= subs(Nj,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
         N3= subs(Nk,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
-        N3= subs(Nh,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
+        N4= subs(Nh,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
         
         %Para cada punto del elemento distribuyo la carga que se situa
         %entre medio del elemento
@@ -263,7 +296,7 @@ force = force - StifMat * u;       % adjust the rhs with the known values
 
 % u now have only fixed conditions loaded inside so we don't touch that
 % and force will have those fixed conditions too
-% we only compute FreeNodes so we could then compute the reaction 
+% we only compute FreeNodes so we could then compute the reaction
 
 %  Compute the solution by solving StifMat * u = force for the
 %  remaining unknown values of u.
@@ -271,7 +304,7 @@ force = force - StifMat * u;       % adjust the rhs with the known values
 FreeNodes = setdiff ( 1:nndof, fix ); % Finds the free node list and
 % solve for it.
 %If it's a transient problem
-if (transient == 1)    
+if (transient == 1)
     for t = 0 : dt : tmax
         
         if (t == 0) % for the first calculation
@@ -307,9 +340,9 @@ if (transient == 1)
         Strnod = StressCal(dmat,u);
         %cada tanto saca un resultado para graficar
         %if (mod(t/dt, paso_graph) == 0)
-            contador = contador + 1;
-            
-            ToGiDCal ([ 'Problems/Results/', file_name, '.', num2str(contador) ],u,reaction,Strnod);
+        contador = contador + 1;
+        
+        ToGiDCal ([ 'Problems/Results/', file_name, '.', num2str(contador) ],u,reaction,Strnod);
         %end
         
     end

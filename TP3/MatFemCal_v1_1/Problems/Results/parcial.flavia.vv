@@ -1,12 +1,12 @@
-BeginZE /media/Disco/Informatica/Mecanica Computacional/Practicas/mc-fich2014/TP3/MatFemCal_v1_1/Problems/Results/prueba4.flavia.vv
-   x -8.476593017578125 8.99536323547363281
-   y 7.12864017486572266 -0.842940330505371094
-   z -11.9573707580566406 11.9573707580566406
-   e 3.98579025268554688
-   v -0 -0 -8.74227765734758577e-08
-   r -1
-   m 1 -1.74845553146951715e-07 0 0 1.74845553146951715e-07 1 0 0 0 0 1 0 0 0 0 1
-   c 0.259385108947753906 3.14284992218017578 0
+BeginZE E:/Problemas/mc-fich2014/TP3/MatFemCal_v1_1/Problems/Results/parcial.flavia.vv
+   x -5.8026647567749023 10.802664756774902
+   y 6.132415771484375 -1.132415771484375
+   z -10.897247314453125 10.897247314453125
+   e 3.632415771484375
+   v 0 0 0
+   r 1
+   m 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
+   c 2.5 2.5 0
    pd 0
    pno 0
    pfo 0
@@ -29,7 +29,7 @@ BeginZE /media/Disco/Informatica/Mecanica Computacional/Practicas/mc-fich2014/TP
    OGLStereo(EyeDistance) 0.075
    OGLStereo(LeftEyeDistance) 1 0 0 1
    OGLStereo(RightEyeDistance) 0 1 1 1
-EndZE /media/Disco/Informatica/Mecanica Computacional/Practicas/mc-fich2014/TP3/MatFemCal_v1_1/Problems/Results/prueba4.flavia.vv
+EndZE E:/Problemas/mc-fich2014/TP3/MatFemCal_v1_1/Problems/Results/parcial.flavia.vv
 
 BeginMirror
    Mirror 0 Angle 0.0 AngleFake -15.0 SizeFactor 2.0 HeightOffset 0.25 Color #d9e5f24d Backlight Off EdgeStyle No Type Scene DrawMode Mirror
@@ -52,13 +52,13 @@ BeginSingleMesh
     Color Shininess: 0.5
     Property Massive: 1
     Property Transparent: 0
-    Property Style: 786445
+    Property Style: 13
     Property Edge Width: 1
     Property Vector Filter Factor: 0
     Property Stream Arrow: 0
   EndSet: 0
 EndSingleMesh
   Post_Prefs_Vector_Size: 0 32 32 32
-  ResultView: {Id 13} {Contour Fill} Load_Analysis 1.0 Temperatures Temperature 0.0 4 0
+  ResultView: {Id 29} {Contour Fill} Load_Analysis 1.0 Fluxes |Fluxes| 0.0 4 0
 EndPostState
 

@@ -28,12 +28,12 @@ clear
 
 %Manual filling of variablesideload forces
 syms x y;
-x_function = (25/2) * x - 10.0; 
+x_function = (2500/2) * x - 10000.0; 
 %y_function = y - 10.0; 
 %variablesideload = [];
 variablesideload = [
-3 , 1 , 0.00000 , x_function, 10;
-7 , 3 , 0.00000 , x_function, 12];
+3 , 1 , 0.00000 , x_function, 5;
+7 , 3 , 0.00000 , x_function, 6];
 
 %Midpoint forces filling
 midpointload = [];

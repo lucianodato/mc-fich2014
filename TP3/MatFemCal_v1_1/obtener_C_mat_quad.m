@@ -22,7 +22,7 @@ function Elem_C_Mat = obtener_C_mat_quad(nodes, rho, cp)
 fform = @(s,t)[(1-s-t+s*t)/4,(1+s-t-s*t)/4,(1+s+t+s*t)/4,(1-s+t-s*t)/4];
 
 pospg = [ -0.577350269189626E+00 , 0.577350269189626E+00 ];
-pespg = [  1.0E+00 , 1.0E+00];
+pespg = [  1.0E+00 , 1.0E+00]; % Esta variable es el peso de wi y wj, pesos relativos a nu y chi en la integración
 M = zeros(4,4);
 
 for i=1 : 2

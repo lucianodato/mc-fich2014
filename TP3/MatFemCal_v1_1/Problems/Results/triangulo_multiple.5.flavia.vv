@@ -1,5 +1,5 @@
-BeginZE E:/Problemas/mc-fich2014/TP3/MatFemCal_v1_1/Problems/Results/parcial.flavia.vv
-   x -5.8026647567749023 10.802664756774902
+BeginZE E:/Problemas/mc-fich2014/TP3/MatFemCal_v1_1/Problems/Results/triangulo_multiple.5.flavia.vv
+   x -5.7731180191040039 10.773118019104004
    y 6.132415771484375 -1.132415771484375
    z -10.897247314453125 10.897247314453125
    e 3.632415771484375
@@ -29,7 +29,7 @@ BeginZE E:/Problemas/mc-fich2014/TP3/MatFemCal_v1_1/Problems/Results/parcial.fla
    OGLStereo(EyeDistance) 0.075
    OGLStereo(LeftEyeDistance) 1 0 0 1
    OGLStereo(RightEyeDistance) 0 1 1 1
-EndZE E:/Problemas/mc-fich2014/TP3/MatFemCal_v1_1/Problems/Results/parcial.flavia.vv
+EndZE E:/Problemas/mc-fich2014/TP3/MatFemCal_v1_1/Problems/Results/triangulo_multiple.5.flavia.vv
 
 BeginMirror
    Mirror 0 Angle 0.0 AngleFake -15.0 SizeFactor 2.0 HeightOffset 0.25 Color #d9e5f24d Backlight Off EdgeStyle No Type Scene DrawMode Mirror
@@ -59,6 +59,6 @@ BeginSingleMesh
   EndSet: 0
 EndSingleMesh
   Post_Prefs_Vector_Size: 0 32 32 32
-  ResultView: {Id 29} {Contour Fill} Load_Analysis 1.0 Fluxes |Fluxes| 0.0 4 0
+  ResultView: {Id 6} {Contour Fill} Load_Analysis 1.0 Temperatures Temperature 0.0 4 0
 EndPostState
 

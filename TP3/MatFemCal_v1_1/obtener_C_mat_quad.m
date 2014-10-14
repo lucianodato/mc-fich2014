@@ -9,7 +9,8 @@
 
 function Elem_C_Mat = obtener_C_mat_quad(nodes, rho, cp)
 
-        %Area del cuadrangulo (con las cordenadas de cada nodo de elemento)
+        syms chi nu;
+
         xi = nodes(1,1);
         yi = nodes(1,2);
         xj = nodes(2,1);
@@ -19,21 +20,30 @@ function Elem_C_Mat = obtener_C_mat_quad(nodes, rho, cp)
         xl = nodes(4,1);
         yl = nodes(4,2);
         
-        l1= 1/2*sqrt((xj-xi)^2 + (yj-yi)^2);
-        l2= 1/2*sqrt((xk-xj)^2 + (yk-yj)^2);
-        A = l1*l2;
-        
         %Familia de forma cuadrangular
-        Ni = ((l1-x)*(l2-y))/(4*l1*l2);%symbolic
-        Nj = ((l1+x)*(l2-y))/(4*l1*l2);
-        Nk = ((l1+x)*(l2+y))/(4*l1*l2);
-        Nl = ((l1-x)*(l2+y))/(4*l1*l2);
+        Ni = 1/4 * (1-chi)*(1-nu);%symbolic
+        Nj = 1/4 * (1+chi)*(1-nu);
+        Nk = 1/4 * (1-chi)*(1-nu);
+        Nl = 1/4 * (1-chi)*(1+nu);    
         
-        %For every side there is one matrix
-
+        N = [Ni Nj Nk Nl];
+        xx = xi*Ni + xj*Nj + xk*Nk + xl*Nl; 
+        yy = yi*Ni + yj*Nj + yk*Nk + yl*Nl;
         
-
-
-        Elem_C_Mat = rho * cp * M;
-
+        dxxchi = diff(xx,chi);
+        dxxnu = diff(xx,nu);
+        dyychi = diff(yy,chi);
+        dyynu = diff(yy,nu);
+        
+        J = [dxxchi dyychi;dxxnu dyynu];
+        detJ = det(J);
+        
+        M = [];
+        for i=1:4
+            for j=1:4
+                M(i,j) = int(int(N(i)*N(j)*detJ,nu,-1,1),chi,-1,1);
+            end
+        end
+        
+        Elem_C_Mat = cp*rho*M;
 end

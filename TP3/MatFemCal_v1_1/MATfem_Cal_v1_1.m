@@ -131,8 +131,6 @@ for ielem = 1 : nelem
             %We should know also the node that is not used in order to
             %build the elemental mixload matrix. In this case we have two
             %null nodes
-            linea = [mixload(index,1); mixload(index,2)];
-            resto = setdiff(lnods,linea);
             
             if(lnods(1) ~= mixload(index,1) && lnods(1) ~= mixload(index,2) && lnods(2) ~= mixload(index,1) && lnods(2) ~= mixload(index,2))
                 nu_node = 1;%not used nodes (i y j)
@@ -240,27 +238,28 @@ for i = 1 : size(midpointheat,1)
         yj = coordinates(elements(midpointheat(i,4),2),2);
         xk = coordinates(elements(midpointheat(i,4),3),1);
         yk = coordinates(elements(midpointheat(i,4),3),2);
-        xh = coordinates(elements(midpointheat(i,4),4),1);
-        yh = coordinates(elements(midpointheat(i,4),4),2);
+        xl = coordinates(elements(midpointheat(i,4),4),1);
+        yl = coordinates(elements(midpointheat(i,4),4),2);
         
-        l1= sqrt((xj-xi)^2 + (yj-yi)^2);
-        l2= sqrt((xk-xj)^2 + (yk-yj)^2);
+        l1= 1/2*sqrt((xj-xi)^2 + (yj-yi)^2);
+        l2= 1/2*sqrt((xk-xj)^2 + (yk-yj)^2);
         A = l1*l2;
         
         %Familia de forma cuadrangular
         Ni = ((l1-x)*(l2-y))/(4*l1*l2);%symbolic
         Nj = ((l1+x)*(l2-y))/(4*l1*l2);
         Nk = ((l1+x)*(l2+y))/(4*l1*l2);
-        Nh = ((l1-x)*(l2+y))/(4*l1*l2);
+        Nl = ((l1-x)*(l2+y))/(4*l1*l2);
         
         N1= subs(Ni,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
         N2= subs(Nj,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
         N3= subs(Nk,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
-        N4= subs(Nh,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
+        N4= subs(Nl,[x,y],[midpointheat(i,1),midpointheat(i,2)]);
         
         %Para cada punto del elemento distribuyo la carga que se situa
         %entre medio del elemento
         ieqn = elements(midpointheat(i,4),1);         % Finds eq. number for the first node
+        force(ieqn) = force(ieqn) + N1*midpointheat(i,3)*A;   % add x force
         
         ieqn = elements(midpointheat(i,4),2);         % Finds eq. number for the second node
         force(ieqn) = force(ieqn) + N2*midpointheat(i,3)*A;   % add x force

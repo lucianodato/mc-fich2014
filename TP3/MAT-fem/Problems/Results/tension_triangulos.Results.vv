@@ -1,12 +1,12 @@
-BeginZE /media/Disco/Informatica/Mecanica Computacional/Practicas/mc-fich2014/TP3/MAT-fem/Problems/Results/ejer3.Results.vv
-   x -0.57374727725982666 1.37374722957611084
-   y 0.584272205829620361 -0.304272174835205078
-   z -1.33281660079956055 1.33281660079956055
+BeginZE E:/Problemas/mc-fich2014/TP3/MAT-fem/Problems/Results/tension_triangulos.Results.vv
+   x -0.61547940969467163 1.415479302406311
+   y 0.58427220582962036 -0.30427217483520508
+   z -1.3328166007995605 1.3328166007995605
    e 0.44427219033241272
    v 0 0 0
    r 1
    m 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
-   c 0.400000005960464478 0.140000000596046448 0
+   c 0.40000000596046448 0.14000000059604645 0
    pd 0
    pno 0
    pfo 0
@@ -16,12 +16,12 @@ BeginZE /media/Disco/Informatica/Mecanica Computacional/Practicas/mc-fich2014/TP
    DrawingType 3
    LightVector 90 90 150 0
    OGLShadow(UseShadows) 0
-   OGLShadow(RenderMode) RenderFast
-   OGLShadow(ShadowBias) 0
-   OGLShadow(AmbientShadows) 0
+   OGLShadow(RenderMode) RenderNice
+   OGLShadow(ShadowBias) -0.002
+   OGLShadow(AmbientShadows) 1
    OGLShadow(UseFBO) 0
-   OGLShadow(FBOSize) 0
-   OGLShadow(DimmedLightFactor) 0
+   OGLShadow(FBOSize) 2048
+   OGLShadow(DimmedLightFactor) 0.02
    OGLStereo(UseStereo) 0
    OGLStereo(RelativeEyeDistance) 1
    OGLStereo(FlipEyes) 0
@@ -29,7 +29,7 @@ BeginZE /media/Disco/Informatica/Mecanica Computacional/Practicas/mc-fich2014/TP
    OGLStereo(EyeDistance) 0.075
    OGLStereo(LeftEyeDistance) 1 0 0 1
    OGLStereo(RightEyeDistance) 0 1 1 1
-EndZE /media/Disco/Informatica/Mecanica Computacional/Practicas/mc-fich2014/TP3/MAT-fem/Problems/Results/ejer3.Results.vv
+EndZE E:/Problemas/mc-fich2014/TP3/MAT-fem/Problems/Results/tension_triangulos.Results.vv
 
 BeginMirror
    Mirror 0 Angle 0.0 AngleFake -15.0 SizeFactor 2.0 HeightOffset 0.25 Color #d9e5f24d Backlight Off EdgeStyle No Type Scene DrawMode Mirror
@@ -52,13 +52,13 @@ BeginSingleMesh
     Color Shininess: 0.5
     Property Massive: 1
     Property Transparent: 0
-    Property Style: 786445
+    Property Style: 13
     Property Edge Width: 1
     Property Vector Filter Factor: 0
     Property Stream Arrow: 0
   EndSet: 0
 EndSingleMesh
   Post_Prefs_Vector_Size: 0 32 32 32
-  ResultView: {Id 13} {Display Vectors} Load_Analysis 1.0 Displacements |Displacements| 70519240.0 4 0
+  ResultView: {Id 7} {Display Vectors} Load_Analysis 1.0 Displacements |Displacements| 82714.0234375 4 0
 EndPostState
 

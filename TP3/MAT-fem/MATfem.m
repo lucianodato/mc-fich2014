@@ -2,7 +2,6 @@
 %
 % Clear memory and variables.
 clear
-
 % The variables are read as a MAT-fem subroutine
 % pstrs = 1 indicate Plane Stress; 0 indicate Plane Strain
 % young =   Young Modulus
@@ -28,12 +27,12 @@ clear
 
 %Manual filling of variablesideload forces
 syms x y;
-x_function = (2500/2) * x - 10000.0; 
+x_function = (25000/2) * x - 10000.0; 
 %y_function = y - 10.0; 
 %variablesideload = [];
 variablesideload = [
-3 , 1 , 0.00000 , x_function, 5;
-7 , 3 , 0.00000 , x_function, 6];
+3 , 1 , 0.00000 , x_function, 10;
+7 , 3 , 0.00000 , x_function, 12];
 
 %Midpoint forces filling
 midpointload = [];
@@ -257,7 +256,6 @@ for i = 1 : size(variablesideload,1)
         end
     end
 end
-
 
 %  Add side forces to the force vector
 for i = 1 : size(sideload,1)

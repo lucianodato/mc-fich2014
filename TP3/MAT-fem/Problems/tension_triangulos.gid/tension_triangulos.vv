@@ -1,6 +1,6 @@
-BeginZE E:\Problemas\mc-fich2014\TP3\MAT-fem\Problems\tension_cuadrangulos.gid\tension_cuadrangulos.vv
-   x -0.66900539398193359 1.5618619918823242
-   y 0.60714292526245117 -0.375
+BeginZE E:\Problemas\mc-fich2014\TP3\MAT-fem\Problems\tension_triangulos.gid\tension_triangulos.vv
+   x -0.28912472724914551 1.0934289693832397
+   y 0.45075207948684692 -0.15791939198970795
    z -5.4237923622131348 5.4237923622131348
    e 5
    v 0 0 0
@@ -29,7 +29,7 @@ BeginZE E:\Problemas\mc-fich2014\TP3\MAT-fem\Problems\tension_cuadrangulos.gid\t
    OGLStereo(EyeDistance) 0.075
    OGLStereo(LeftEyeDistance) 1 0 0 1
    OGLStereo(RightEyeDistance) 0 1 1 1
-EndZE E:\Problemas\mc-fich2014\TP3\MAT-fem\Problems\tension_cuadrangulos.gid\tension_cuadrangulos.vv
+EndZE E:\Problemas\mc-fich2014\TP3\MAT-fem\Problems\tension_triangulos.gid\tension_triangulos.vv
 
 BeginMirror
    Mirror 0 Angle 0.0 AngleFake -15.0 SizeFactor 2.0 HeightOffset 0.25 Color #d9e5f24d Backlight Off EdgeStyle No Type Scene DrawMode Mirror

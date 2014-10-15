@@ -15,22 +15,22 @@
 global coordinates
 coordinates = [
          0.00000   ,         5.00000  ;
-         5.00000   ,         5.00000  ;
          0.00000   ,         0.00000  ;
+         5.00000   ,         5.00000  ;
          5.00000   ,         0.00000  ] ; 
 %
 % Elements
 %
 global elements
 elements = [
-      4   ,      2   ,      1   ,      3   ] ; 
+      4   ,      3   ,      1   ,      2   ] ; 
 %
 % Fixed Nodes
 %
 fixnodes = [
-      2  ,   100.00000  ;
-      3  ,     0.00000  ;
-      4  ,     0.00000  ] ;
+      2  ,     0.00000  ;
+      3  ,   100.00000  ;
+      4  ,   100.00000  ] ;
 %
 % Punctual Fluxes
 %
@@ -39,5 +39,5 @@ pointload = [ ] ;
 % Side loads
 %
 sideload = [
-      1  ,      3  ,    2.00000  ];
+      1  ,      2  ,    2.00000  ];
 

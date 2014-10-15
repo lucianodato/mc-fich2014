@@ -24,18 +24,18 @@ clear
 %               nodal loads.
 
 %Mixed Load Conditions initialization %@ Agregado
-%mixload = [];
-mixload = [ 3   ,  1  , 30.00000 , 1.2 , 26;
-            6   ,  3  , 30.00000 , 1.2 , 28;
-            10  ,  6  , 30.00000 , 1.2 , 30;
-            16  ,  10 , 30.00000 , 1.2 , 32];%Manual completition
+mixload = [];
+% mixload = [ 17   ,  10  , 30.00000 , 1.2 , 16;
+%             10   ,   5  , 30.00000 , 1.2 , 15;
+%              5   ,   2  , 30.00000 , 1.2 , 14;
+%              2   ,   1  , 30.00000 , 1.2 , 13];%Manual completition
 
 %Nodal heat source %@ Agregado
 midpointheat = [];
 %midpointheat = [1,1,5,1];
 
 %Transient Flag %@ Agregado
-transient = 1;
+transient = 0;
 
 
 if (transient == 1) %@ Agregado
@@ -43,7 +43,7 @@ if (transient == 1) %@ Agregado
     
     rho = 7897;
     cp = 0.108;
-    tmax = 100;
+    tmax = 1000;
     %ojo este no puede ser cualquier valor
     %alpha= kx/(rho*cp)
     %nd = numero de dimensiones (2 en 2D)
@@ -52,7 +52,7 @@ if (transient == 1) %@ Agregado
     contador = 0;
     paso_graph = floor((tmax/dt+1)/10);
     
-    flag_metodo = 2; % 0 fordward, 1 backward, 2 crank-nicholson
+    flag_metodo = 0; % 0 fordward, 1 backward, 2 crank-nicholson
 end
 % FIN VARIABLES
 %@ Agregado
@@ -325,11 +325,11 @@ if (transient == 1)
         
         switch flag_metodo
             case 0 % forward
-                reaction(fix) = StifMat(fix,1:nndof) * u_anterior(1:nndof) - C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - force(fix);
+                reaction(fix) = StifMat(fix,1:nndof) * u_anterior(1:nndof) + C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - force(fix);
             case 1 % backward
-                reaction(fix) = StifMat(fix,1:nndof) * u(1:nndof) - C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - force(fix);
-            otherwise % CN
-                reaction(fix) = 0.5*StifMat(fix,1:nndof) * (u(1:nndof) + u_anterior(1:nndof)) - C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - force(fix);
+                reaction(fix) = StifMat(fix,1:nndof) * u(1:nndof) + C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - force(fix);
+            case 2 % CN
+                reaction(fix) = 0.5*StifMat(fix,1:nndof) * (u(1:nndof) + u_anterior(1:nndof)) + C_Mat(fix, 1:nndof) * (u(1:nndof) - u_anterior(1:nndof)) - force(fix);
         end
         
         ttim = timingcal('Time  to solve the stifness matrix',ttim); %Reporting time
@@ -337,11 +337,11 @@ if (transient == 1)
         % Compute the stresses
         Strnod = StressCal(dmat,u);
         %cada tanto saca un resultado para graficar
-        %if (mod(t/dt, paso_graph) == 0)
-        contador = contador + 1;
-        
-        ToGiDCal ([ 'Problems/Results/', file_name, '.', num2str(contador) ],u,reaction,Strnod);
-        %end
+        if (mod(t/dt, paso_graph) == 0)
+            contador = contador + 1;
+            
+            ToGiDCal ([ 'Problems/Results/', file_name, '.', num2str(contador) ],u,reaction,Strnod);
+        end
         
     end
     

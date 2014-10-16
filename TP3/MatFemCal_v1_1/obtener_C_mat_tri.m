@@ -17,10 +17,10 @@ function Elem_C_Mat = obtener_C_mat_tri(nodes, rho, cp)
   c(2) = nodes(1,1) - nodes(3,1);
   c(3) = nodes(2,1) - nodes(1,1);
 
-  area2 = abs(b(1)*c(2) - b(2)*c(1));
+  area = 1/2 * abs(b(1)*c(2) - b(2)*c(1));
   
   cmat = [ 2 1 1 ; 1 2 1 ; 1 1 2];
 
-  Elem_C_Mat = rho * cp * area2 / 24 * cmat;
+  Elem_C_Mat = rho * cp * area/24 * cmat;
 
 end

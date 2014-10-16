@@ -35,20 +35,20 @@ midpointheat = [];
 %midpointheat = [1,1,5,1];
 
 %Transient Flag %@ Agregado
-transient = 0;
+transient = 1;
 
 
 if (transient == 1) %@ Agregado
     % VARIABLES DE ENTRADA INICIAL
     
-    rho = 7897;
-    cp = 0.108;
-    tmax = 1000;
+    rho = 1.0;
+    cp = 1.0;
+    tmax = 0.001;
     %ojo este no puede ser cualquier valor
     %alpha= kx/(rho*cp)
     %nd = numero de dimensiones (2 en 2D)
     %dt<= 0.5*paso_menor/(alpha*nd)
-    dt = 10;
+    dt = 0.0001;
     contador = 0;
     paso_graph = floor((tmax/dt+1)/10);
     
@@ -305,20 +305,25 @@ FreeNodes = setdiff ( 1:nndof, fix ); % Finds the free node list and
 if (transient == 1)
     for t = 0 : dt : tmax
         
-        if (t == 0) % for the first calculation
-            u_anterior = zeros(size(force));
-        else
-            %we update last steps variables
-            u_anterior = u;
-        end
+        %if (t == 0) % for the first calculation
+        u_anterior = u;
+        %else
+        %we update last steps variables
+        %    u_anterior = u;
+        %end
         
         %@ AGREGADO
-        u(FreeNodes) = metodo_calculo_temporal(StifMat(FreeNodes, FreeNodes), ...
-            C_Mat(FreeNodes, FreeNodes), ...
-            force(FreeNodes), ...
+        u = metodo_calculo_temporal(StifMat, ...
+            C_Mat, ...
+            force, ...
             dt, ...
-            u_anterior(FreeNodes), ...
+            u_anterior, ...
             flag_metodo);
+        
+        for j = 1 : size(fixnodes,1)
+            ieqn = fixnodes(j,1);                      %Finds the equation number
+            u(ieqn) = fixnodes(j,2);                   %and store the solution in u % and mark the eq as a fix value
+        end
         
         %  Compute the reactions on the fixed nodes as a R = StifMat * u - F
         reaction = sparse(nndof,1);
@@ -337,11 +342,11 @@ if (transient == 1)
         % Compute the stresses
         Strnod = StressCal(dmat,u);
         %cada tanto saca un resultado para graficar
-        if (mod(t/dt, paso_graph) == 0)
-            contador = contador + 1;
-            
-            ToGiDCal ([ 'Problems/Results/', file_name, '.', num2str(contador) ],u,reaction,Strnod);
-        end
+        %if (mod(t/dt, paso_graph) == 0)
+        contador = contador + 1;
+        
+        ToGiDCal ([ 'Problems/Results/', file_name, '.', num2str(contador) ],u,reaction,Strnod);
+        %end
         
     end
     

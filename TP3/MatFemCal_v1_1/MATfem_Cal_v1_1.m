@@ -35,7 +35,7 @@ midpointheat = [];
 %midpointheat = [1,1,5,1];
 
 %Transient Flag %@ Agregado
-transient = 1;
+transient = 0;
 
 
 if (transient == 1) %@ Agregado

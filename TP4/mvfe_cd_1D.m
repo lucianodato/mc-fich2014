@@ -10,19 +10,18 @@ L = fin - ini;
 h = L/cant_celdas;%distancia que separa las celdas (si son regulares)
 
 %Definicion de parametros especificos de la ecuacion de balance termico
-k = 1;%Constante de difusividad
-Q = 1;%fuente
-v = 1;%velocidad
-c = 1;%constante reactiva
+k = -1;%Constante de difusividad
+Q = -1;%fuente
+v = -100;%velocidad
 cm_h = 1;%h de la condicion mixta
 cm_k = 1;%k de la condicion mixta si la hay
 cm_finf = 1;%temperatura externa fi inf
 
 %Definicion de las condiciones de borde (-1 significa que no aplica)
 cbd_i = 0;%condicion de borde dirichlet izquierda
-cbd_d = 1;%condicion de borde dirichlet derecha
+cbd_d = -1;%condicion de borde dirichlet derecha
 cbn_i = -1;%condicion de borde neumann izquierda
-cbn_d = -1;%condicion de borde neumann derecha
+cbn_d = 1;%condicion de borde neumann derecha
 cbm_i = -1;%condicion de borde mixta izquierda
 cbm_d = -1;%condicion de borde mixta derecha
 
@@ -87,7 +86,7 @@ for i = 1:cant_celdas
             else
                 if (cbn_i ~= -1)
                     %Condicion Neumann
-                    b(i) = -Q*h + k*cbn_i + v * (-1*cbn_i);%el termino advectivo actua en la direccion de la cara
+                    b(i) = -Q*h + k*cbn_i + v * (-1*k*cbn_i);%el termino advectivo actua en la direccion de la cara
                 else
                     %Condicion Mixta
                     b(i) = -Q*h - 2*k/h * cbn_i + cm_h*cm_finf;
@@ -101,7 +100,7 @@ for i = 1:cant_celdas
             else
                 if (cbn_d ~= -1)
                     %Condicion Neumann
-                    b(i) = -Q*h + k*cbn_d + v * (1*cbn_d);%el termino advectivo actua en la direccion de la cara
+                    b(i) = -Q*h + k*cbn_d + v * (1*k*cbn_d);%el termino advectivo actua en la direccion de la cara
                 else
                     %Condicion Mixta
                     b(i) = -Q*h - 2*k/h * cbn_d ;

@@ -25,11 +25,11 @@ cant_pasos_tiempo = (t_max-t_ini)/dt;
 temp_t = zeros(cant_celdas,1); %Por el inicial
 
 %Definicion de las condiciones de borde (-1 significa que no aplica)
-cbd_i = 0;%condicion de borde dirichlet izquierda
+cbd_i = -1;%condicion de borde dirichlet izquierda
 cbd_d = -1;%condicion de borde dirichlet derecha
 cbn_i = -1;%condicion de borde neumann izquierda
 cbn_d = 1;%condicion de borde neumann derecha
-cbm_i = -1;%condicion de borde mixta izquierda
+cbm_i = 1;%condicion de borde mixta izquierda
 cbm_d = -1;%condicion de borde mixta derecha
 
 
@@ -54,8 +54,8 @@ for i = 1:cant_pasos_tiempo
                         A(j,j+1) = 1/2*(-v * 1/2 + k/h);
                     else
                         %Condicion Mixta
-                        A(i,i) = -v*(2*k/h)/((2*k+h^2)/h) +2/h*(2*k/h)/((2*k+h^2)/h) -v * 1/2 + k/h * -3;
-                        A(i,i+1) = -v * 1/2 + k/h;
+                        A(j,j) = h/dt + 1/2*(-v*(2*k/h)/((2*k+h^2)/h) +2/h*(2*k/h)/((2*k+h^2)/h) -v * 1/2 + k/h * -3);
+                        A(j,j+1) = -v * 1/2 + k/h;
                     end
                 end
             case cant_celdas
@@ -70,8 +70,8 @@ for i = 1:cant_pasos_tiempo
                         A(j,j) = h/dt + 1/2*(-v - v * 1/2 + k/h * -3);
                     else
                         %Condicion Mixta
-                        A(i,i) = -v*(2*k/h)/((2*k+h^2)/h) +2/h*(2*k/h)/((2*k+h^2)/h) -v * 1/2 + k/h * -3;
-                        A(i,i+1) = -v * 1/2 + k/h;
+                        A(j,j) = h/dt + 1/2*(-v*(2*k/h)/((2*k+h^2)/h) +2/h*(2*k/h)/((2*k+h^2)/h) -v * 1/2 + k/h * -3);
+                        A(j,j+1) = -v * 1/2 + k/h;
                     end
                 end
             otherwise
@@ -93,28 +93,28 @@ for i = 1:cant_pasos_tiempo
                 %Caso que es la primera celda
                 if (cbd_i ~= -1)
                     %Condicion Dirichlet
-                    b(j) = -Q*h - 2*k/h * cbd_i + v * cbd_i + temp_t(i)*h/dt + 1/2*temp_t(i)*(- 2*k/h * cbd_i + v * cbd_i);
+                    b(j) = -Q*h - 2*k/h * cbd_i + v * cbd_i + temp_t(j)*h/dt + 1/2*temp_t(j)*(- 2*k/h * cbd_i + v * cbd_i);
                 else
                     if (cbn_i ~= -1)
                         %Condicion Neumann
-                        b(j) = -Q*h + k*cbn_i + v * (-1*(h/2)*cbn_i)+ temp_t(i)*h/dt + 1/2*temp_t(i)*(k*cbn_i + v * (-1*(h/2)*cbn_i));%el termino advectivo actua en la direccion de la cara
+                        b(j) = -Q*h + k*cbn_i + v * (-1*(h/2)*cbn_i)+ temp_t(j)*h/dt + 1/2*temp_t(j)*(k*cbn_i + v * (-1*(h/2)*cbn_i));%el termino advectivo actua en la direccion de la cara
                     else
                         %Condicion Mixta
-                        b(j) = -Q*h -v*cm_finf*(2*k/h)/((2*k+h^2)/h) +2/h*cm_finf*(2*k/h)/((2*k+h^2)/h);
+                        b(j) = -Q*h -v*cm_finf*(2*k/h)/((2*k+h^2)/h) +2/h*cm_finf*(2*k/h)/((2*k+h^2)/h) + temp_t(j)*h/dt + 1/2*temp_t(j)*(-v*cm_finf*(2*k/h)/((2*k+h^2)/h) +2/h*cm_finf*(2*k/h)/((2*k+h^2)/h));
                     end
                 end
             case cant_celdas
                 %Caso ultima celda
                 if (cbd_d ~= -1)
                     %Condicion Dirichlet
-                    b(j) = -Q*h - 2*k/h * cbd_d + v * cbd_d + temp_t(i)*h/dt + 1/2*temp_t(i)*(- 2*k/h * cbd_d + v * cbd_d);
+                    b(j) = -Q*h - 2*k/h * cbd_d + v * cbd_d + temp_t(j)*h/dt + 1/2*temp_t(j)*(- 2*k/h * cbd_d + v * cbd_d);
                 else
                     if (cbn_d ~= -1)
                         %Condicion Neumann
-                        b(j) = -Q*h + k*cbn_d + v * (1*(h/2)*cbn_d) + temp_t(i)*h/dt + 1/2*temp_t(i)*(k*cbn_d + v * (1*(h/2)*cbn_d));%el termino advectivo actua en la direccion de la cara
+                        b(j) = -Q*h + k*cbn_d + v * (1*(h/2)*cbn_d) + temp_t(j)*h/dt + 1/2*temp_t(j)*(k*cbn_d + v * (1*(h/2)*cbn_d));%el termino advectivo actua en la direccion de la cara
                     else
                         %Condicion Mixta
-                        b(j) = -Q*h -v*cm_finf*(2*k/h)/((2*k+h^2)/h) +2/h*cm_finf*(2*k/h)/((2*k+h^2)/h) ;
+                        b(j) = -Q*h -v*cm_finf*(2*k/h)/((2*k+h^2)/h) +2/h*cm_finf*(2*k/h)/((2*k+h^2)/h) + temp_t(j)*h/dt + 1/2*temp_t(j)*(-v*cm_finf*(2*k/h)/((2*k+h^2)/h) +2/h*cm_finf*(2*k/h)/((2*k+h^2)/h));
                     end
                 end
             otherwise
@@ -124,6 +124,6 @@ for i = 1:cant_pasos_tiempo
     end
     %Resolucion del sistema
     temp=A\b;
-    temp_t = [temp_t(:,:), temp(:)];
+    temp_t = [temp_t, temp];
 end
 

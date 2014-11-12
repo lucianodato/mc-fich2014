@@ -54,7 +54,7 @@ for i = 1:cant_pasos_tiempo
                         A(j,j+1) = 1/2*(-v * 1/2 + k/h);
                     else
                         %Condicion Mixta
-                        A(j,j) = h/dt + 1/2*(-v*(2*k/h)/((2*k+h^2)/h) +2/h*(2*k/h)/((2*k+h^2)/h) -v * 1/2 + k/h * -3);
+                        A(j,j) = h/dt + 1/2*(-v*(2*k/h)/((2*k/h)+cm_h) +2/h*(2*k/h)/((2*k/h)+cm_h) -v * 1/2 + k/h * -3);
                         A(j,j+1) = -v * 1/2 + k/h;
                     end
                 end
@@ -70,7 +70,7 @@ for i = 1:cant_pasos_tiempo
                         A(j,j) = h/dt + 1/2*(-v - v * 1/2 + k/h * -3);
                     else
                         %Condicion Mixta
-                        A(j,j) = h/dt + 1/2*(-v*(2*k/h)/((2*k+h^2)/h) +2/h*(2*k/h)/((2*k+h^2)/h) -v * 1/2 + k/h * -3);
+                        A(j,j) = h/dt + 1/2*(-v*(2*k/h)/((2*k/h)+cm_h) +2/h*(2*k/h)/((2*k/h)*cm_h) -v * 1/2 + k/h * -3);
                         A(j,j+1) = -v * 1/2 + k/h;
                     end
                 end
@@ -100,7 +100,7 @@ for i = 1:cant_pasos_tiempo
                         b(j) = -Q*h + k*cbn_i + v * (-1*(h/2)*cbn_i)+ temp_t(j)*h/dt + 1/2*temp_t(j)*(k*cbn_i + v * (-1*(h/2)*cbn_i));%el termino advectivo actua en la direccion de la cara
                     else
                         %Condicion Mixta
-                        b(j) = -Q*h -v*cm_finf*(2*k/h)/((2*k+h^2)/h) +2/h*cm_finf*(2*k/h)/((2*k+h^2)/h) + temp_t(j)*h/dt + 1/2*temp_t(j)*(-v*cm_finf*(2*k/h)/((2*k+h^2)/h) +2/h*cm_finf*(2*k/h)/((2*k+h^2)/h));
+                        b(j) = -Q*h -v*cm_finf*(cm_h)/((2*k/h)+cm_h) +2/h*cm_finf*(cm_h)/((2*k/h)+cm_h) + temp_t(j)*h/dt + 1/2*temp_t(j)*(-v*cm_finf*(cm_h)/((2*k/h)+cm_h) +2/h*cm_finf*(cm_h)/((2*k/h)+cm_h));
                     end
                 end
             case cant_celdas
@@ -114,7 +114,7 @@ for i = 1:cant_pasos_tiempo
                         b(j) = -Q*h + k*cbn_d + v * (1*(h/2)*cbn_d) + temp_t(j)*h/dt + 1/2*temp_t(j)*(k*cbn_d + v * (1*(h/2)*cbn_d));%el termino advectivo actua en la direccion de la cara
                     else
                         %Condicion Mixta
-                        b(j) = -Q*h -v*cm_finf*(2*k/h)/((2*k+h^2)/h) +2/h*cm_finf*(2*k/h)/((2*k+h^2)/h) + temp_t(j)*h/dt + 1/2*temp_t(j)*(-v*cm_finf*(2*k/h)/((2*k+h^2)/h) +2/h*cm_finf*(2*k/h)/((2*k+h^2)/h));
+                        b(j) = -Q*h -v*cm_finf*(cm_h)/((2*k/h)+cm_h) +2/h*cm_finf*(cm_h)/((2*k/h)+cm_h) + temp_t(j)*h/dt + 1/2*temp_t(j)*(-v*cm_finf*(cm_h)/((2*k/h)+cm_h) +2/h*cm_finf*(cm_)/((2*k/h)+cm_h));
                     end
                 end
             otherwise
@@ -124,6 +124,6 @@ for i = 1:cant_pasos_tiempo
     end
     %Resolucion del sistema
     temp=A\b;
-    temp_t = [temp_t, temp];
+    temp_t = [temp_t(:,:), temp(:)];
 end
 

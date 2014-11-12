@@ -43,7 +43,7 @@ for i = 1:cant_celdas
                     A(i,i+1) = -v * 1/2 + k/h;
                 else
                     %Condicion Mixta
-                    A(i,i) = -v*(2*k/h)/((2*k+h^2)/h) +2/h*(2*k/h)/((2*k+h^2)/h) -v * 1/2 + k/h * -3;
+                    A(i,i) = -v*(2*k/h)/((2*k/h)+cm_h) +2/h*(2*k/h)/((2*k/h)+cm_h) -v * 1/2 + k/h * -3;
                     A(i,i+1) = -v * 1/2 + k/h;
                 end
             end
@@ -59,7 +59,7 @@ for i = 1:cant_celdas
                     A(i,i) = -v - v * 1/2 + k/h * -3;
                 else
                     %Condicion Mixta
-                    A(i,i) = -v*(2*k/h)/((2*k+h^2)/h) +2/h*(2*k/h)/((2*k+h^2)/h) -v * 1/2 + k/h * -3;
+                    A(i,i) = -v*(2*k/h)/((2*k/h)+cm_h) +2/h*(2*k/h)/((2*k/h)+cm_h) -v * 1/2 + k/h * -3;
                     A(i,i+1) = -v * 1/2 + k/h;
                 end
             end
@@ -89,7 +89,7 @@ for i = 1:cant_celdas
                     b(i) = -Q*h + k*cbn_i + v * (-1*(h/2)*cbn_i);%el termino advectivo actua en la direccion de la cara
                 else
                     %Condicion Mixta
-                    b(i) = -Q*h -v*cm_finf*(2*k/h)/((2*k+h^2)/h) +2/h*cm_finf*(2*k/h)/((2*k+h^2)/h);
+                    b(i) = -Q*h -v*cm_finf*(cm_h)/((2*k+h^2)/h) +2/h*cm_finf*(2*k/h)/((2*k+h^2)/h);
                 end
             end
         case cant_celdas
@@ -103,7 +103,7 @@ for i = 1:cant_celdas
                     b(i) = -Q*h + k*cbn_d + v * (1*(h/2)*cbn_d);%el termino advectivo actua en la direccion de la cara
                 else
                     %Condicion Mixta
-                    b(i) = -Q*h -v*cm_finf*(2*k/h)/((2*k+h^2)/h) +2/h*cm_finf*(2*k/h)/((2*k+h^2)/h) ;
+                    b(i) = -Q*h -v*cm_finf*(cm_h)/((2*k/h)+cm_h) + 2/h*cm_finf*(2*k/h)/((2*k/h) +cm_h) ;
                 end
             end
         otherwise

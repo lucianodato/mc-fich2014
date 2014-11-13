@@ -50,7 +50,7 @@ for i = 1:cant_pasos_tiempo
                 else
                     if(cbn_i ~= -1)
                         %Condicion Neumann
-                        A(j,j) = h/dt +1/2*( -v - v * 1/2 + k/h * -3);
+                        A(j,j) = h/dt +1/2*( -v - v * 1/2 + k/h);
                         A(j,j+1) = 1/2*(-v * 1/2 + k/h);
                     else
                         %Condicion Mixta
@@ -67,7 +67,7 @@ for i = 1:cant_pasos_tiempo
                     if(cbn_d ~= -1)
                         %Condicion Neumann
                         A(j,j-1) = -v * 1/2 + k/h;
-                        A(j,j) = h/dt + 1/2*(-v - v * 1/2 + k/h * -3);
+                        A(j,j) = h/dt + 1/2*(-v - v * 1/2 - k/h);
                     else
                         %Condicion Mixta
                         A(j,j) = h/dt + 1/2*(-v*(2*k/h)/((2*k/h)+cm_h) +2/h*(2*k/h)/((2*k/h)*cm_h) -v * 1/2 + k/h * -3);
@@ -111,7 +111,7 @@ for i = 1:cant_pasos_tiempo
                 else
                     if (cbn_d ~= -1)
                         %Condicion Neumann
-                        b(j) = -Q*h + k*cbn_d + v * (1*(h/2)*cbn_d) + temp_t(j)*h/dt + 1/2*temp_t(j)*(k*cbn_d + v * (1*(h/2)*cbn_d));%el termino advectivo actua en la direccion de la cara
+                        b(j) = -Q*h - k*cbn_d + v * (1*(h/2)*cbn_d) + temp_t(j)*h/dt + 1/2*temp_t(j)*(- k*cbn_d + v * (1*(h/2)*cbn_d));%el termino advectivo actua en la direccion de la cara
                     else
                         %Condicion Mixta
                         b(j) = -Q*h -v*cm_finf*(cm_h)/((2*k/h)+cm_h) +2/h*cm_finf*(cm_h)/((2*k/h)+cm_h) + temp_t(j)*h/dt + 1/2*temp_t(j)*(-v*cm_finf*(cm_h)/((2*k/h)+cm_h) +2/h*cm_finf*(cm_)/((2*k/h)+cm_h));

@@ -39,34 +39,34 @@ for i = 1:cant_celdas
             else
                 if(cbn_i ~= -1)
                     %Condicion Neumann
-                    A(i,i) = -v - v * 1/2 + k/h;
-                    A(i,i+1) = -v * 1/2 + k/h;
+                    A(i,i) = - k/h;
+                    A(i,i+1) = k/h;
                 else
                     %Condicion Mixta
-                    A(i,i) = -v*(2*cm_k/h)/((2*cm_k/h)+cm_h) +2/h*(2*cm_k/h)/((2*cm_k/h)+cm_h) -v * 1/2 + k/h;
+                    A(i,i) = v*(2*cm_k/h)/((2*cm_k/h)+cm_h) + ((2*k/h)*(2*cm_k/h))/((2*cm_k/h)+cm_h) -v * 1/2 - k/h;
                     A(i,i+1) = -v * 1/2 + k/h;
                 end
             end
         case cant_celdas
             %Caso ultima celda
             if (cbd_d ~= -1) %Condicion Dirichlet
-                A(i,i-1) = -v + k/h;
-                A(i,i) = -v + k/h * -3;
+                A(i,i-1) = v + k/h;
+                A(i,i) = k/h * -3;
             else
                 if(cbn_d ~= -1)
                     %Condicion Neumann
-                    A(i,i-1) = -v + k/h;
+                    A(i,i-1) = v + k/h;
                     A(i,i) = -v - k/h;
                 else
                     %Condicion Mixta
-                    A(i,i) = -v*(2*cm_k/h)/((2*cm_k/h)+cm_h) -2/h*(2*cm_k/h)/((2*cm_k/h)+cm_h) -v * 1/2 + k/h;
-                    A(i,i+1) = -v * 1/2 + k/h;
+                    A(i,i) = v*(2*cm_k/h)/((-2*cm_k/h)+cm_h) - ((2*k/h)*(2*cm_k/h))/((-2*cm_k/h)+cm_h) +v * 1/2 + k/h;
+                    A(i,i+1) = v * 1/2 - k/h;
                 end
             end
         otherwise
             %celdas interna
-            A(i,i-1) = - v + k/h;
-            A(i,i) = -v + k/h * -2;
+            A(i,i-1) =  v + k/h;
+            A(i,i) =  -v + k/h * -2;
             A(i,i+1) = k/h;
     end
 end
@@ -82,14 +82,14 @@ for i = 1:cant_celdas
             %Caso que es la primera celda
             if (cbd_i ~= -1) 
                 %Condicion Dirichlet
-                b(i) = -Q*h - 2*k/h * cbd_i + v * cbd_i;
+                b(i) = -Q*h - 2*k/h * cbd_i - v * cbd_i;
             else
                 if (cbn_i ~= -1)
                     %Condicion Neumann
-                    b(i) = -Q*h + k*cbn_i + v * (-1*(h/2)*cbn_i);%el termino advectivo actua en la direccion de la cara
+                    b(i) = -Q*h - k*cbn_i - v * (-1*(h/2)*cbn_i);%el termino advectivo actua en la direccion de la cara
                 else
                     %Condicion Mixta
-                    b(i) = -Q*h -v*cm_finf*(cm_h)/((2*cm_k/h)+cm_h) +2/h*cm_finf*(2*cm_k/h)/((2*cm_k/h)+cm_h);
+                    b(i) = -Q*h - v*cm_finf*(cm_h)/((2*cm_k/h)+cm_h) - (2*k/h)*cm_finf*(cm_h)/((2*cm_k/h)+cm_h);
                 end
             end
         case cant_celdas
@@ -103,7 +103,7 @@ for i = 1:cant_celdas
                     b(i) = -Q*h - k*cbn_d + v * (1*(h/2)*cbn_d);%el termino advectivo actua en la direccion de la cara
                 else
                     %Condicion Mixta
-                    b(i) = -Q*h -v*cm_finf*(cm_h)/((2*cm_k/h)+cm_h) - 2/h*cm_finf*(2*cm_k/h)/((2*cm_k/h) +cm_h) ;
+                    b(i) = -Q*h + v*cm_finf*(cm_h)/((2*cm_k/h)+cm_h) - ((2*k/h)*cm_finf*(cm_h))/((2*cm_k/h) +cm_h) ;
                 end
             end
         otherwise
@@ -114,3 +114,5 @@ end
 
 %Resolucion del sistema
 temp=A\b;
+
+%plot(temp);

@@ -95,28 +95,28 @@ for i = 1:cant_pasos_tiempo
                 %Caso que es la primera celda
                 if (cbd_i ~= -1)
                     %Condicion Dirichlet
-                    b(j) = -Q*h - 2*k/h * cbd_i - v * cbd_i + temp_t(j)*h/dt + 1/2*temp_t(j)*(- 2*k/h * cbd_i - v * cbd_i);
+                    b(j) = -Q*h - 2*k/h * cbd_i - v * cbd_i + temp_t(j,i)*h/dt + 1/2*temp_t(j,i)*(- 2*k/h * cbd_i - v * cbd_i);
                 else
                     if (cbn_i ~= -1)
                         %Condicion Neumann
-                        b(j) = -Q*h  - k*cbn_i - v * (-1*(h/2)*cbn_i)+ temp_t(j)*h/dt + 1/2*temp_t(j)*( - k*cbn_i - v * (-1*(h/2)*cbn_i));%el termino advectivo actua en la direccion de la cara
+                        b(j) = -Q*h  - k*cbn_i - v * (-1*(h/2)*cbn_i)+ temp_t(j,i)*h/dt + 1/2*temp_t(j,i)*( - k*cbn_i - v * (-1*(h/2)*cbn_i));%el termino advectivo actua en la direccion de la cara
                     else
                         %Condicion Mixta
-                        b(j) = -Q*h- v*cm_finf*(cm_h)/((2*cm_k/h)+cm_h) - k*2*cm_h*cm_finf/(2*cm_k+cm_h*h) + temp_t(j)*h/dt + 1/2*temp_t(j)*(- v*cm_finf*(cm_h)/((2*cm_k/h)+cm_h) - k*2*cm_h*cm_finf/(2*cm_k+cm_h*h));
+                        b(j) = -Q*h- v*cm_finf*(cm_h)/((2*cm_k/h)+cm_h) - k*2*cm_h*cm_finf/(2*cm_k+cm_h*h) + temp_t(j,i)*h/dt + 1/2*temp_t(j,i)*(- v*cm_finf*(cm_h)/((2*cm_k/h)+cm_h) - k*2*cm_h*cm_finf/(2*cm_k+cm_h*h));
                     end
                 end
             case cant_celdas
                 %Caso ultima celda
                 if (cbd_d ~= -1)
                     %Condicion Dirichlet
-                    b(j) = -Q*h  - 2*k/h * cbd_d + v * cbd_d + temp_t(j)*h/dt + 1/2*temp_t(j)*( - 2*k/h * cbd_d + v * cbd_d);
+                    b(j) = -Q*h  - 2*k/h * cbd_d + v * cbd_d + temp_t(j,i)*h/dt + 1/2*temp_t(j,i)*( - 2*k/h * cbd_d + v * cbd_d);
                 else
                     if (cbn_d ~= -1)
                         %Condicion Neumann
-                        b(j) = -Q*h - k*cbn_d + v * (1*(h/2)*cbn_d) + temp_t(j)*h/dt + 1/2*temp_t(j)*(- k*cbn_d + v * (1*(h/2)*cbn_d));%el termino advectivo actua en la direccion de la cara
+                        b(j) = -Q*h - k*cbn_d + v * (1*(h/2)*cbn_d) + temp_t(j,i)*h/dt + 1/2*temp_t(j,i)*(- k*cbn_d + v * (1*(h/2)*cbn_d));%el termino advectivo actua en la direccion de la cara
                     else
                         %Condicion Mixta
-                        b(j) = -Q*h + v*cm_finf*(cm_h)/((-2*cm_k/h)+cm_h) - k*(-2*cm_h*cm_finf/(2*cm_k+cm_h*h)) + temp_t(j)*h/dt + 1/2*temp_t(j)*(+ v*cm_finf*(cm_h)/((-2*cm_k/h)+cm_h) - k*(-2*cm_h*cm_finf/(2*cm_k+cm_h*h)));
+                        b(j) = -Q*h + v*cm_finf*(cm_h)/((-2*cm_k/h)+cm_h) - k*(-2*cm_h*cm_finf/(2*cm_k+cm_h*h)) + temp_t(j,i)*h/dt + 1/2*temp_t(j,i)*(+ v*cm_finf*(cm_h)/((-2*cm_k/h)+cm_h) - k*(-2*cm_h*cm_finf/(2*cm_k+cm_h*h)));
                     end
                 end
             otherwise

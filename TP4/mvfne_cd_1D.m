@@ -67,13 +67,13 @@ for i = 1:cant_pasos_tiempo
                 else
                     if(cbn_d ~= -1)
                         %Condicion Neumann
-                        A(j,j-1) = v * 1/2 + k/h;
+                        A(j,j-1) = 1/2*(v * 1/2 + k/h);
                         A(j,j) = h/dt + 1/2*(-v + v * 1/2 - k/h);
                     else
                         %Condicion Mixta
                         difer2= 2/h - 4*cm_k/(2*h*cm_k+cm_h*h^2);
                         A(j,j) = h/dt + 1/2*(v*(2*cm_k/h)/((-2*cm_k/h) + cm_h) + k*difer2 + v * 1/2 - k/h);
-                        A(j,j+1) = v * 1/2 + k/h;
+                        A(j,j+1) = 1/2*(v * 1/2 + k/h);
                     end
                 end
             otherwise
@@ -95,39 +95,47 @@ for i = 1:cant_pasos_tiempo
                 %Caso que es la primera celda
                 if (cbd_i ~= -1)
                     %Condicion Dirichlet
-                    b(j) = -Q*h - 2*k/h * cbd_i - v * cbd_i + temp_t(j,i)*h/dt + 1/2*temp_t(j,i)*(- 2*k/h * cbd_i - v * cbd_i);
+                    ant1= -1/2*(- v * cbd_i  - (2*k/h)*(cbd_i -temp_t(j,i)) + (v/2)*(temp_t(j,i)+temp_t(j+1,i)) - (k/h)*(temp_t(j+1,i)-temp_t(j,i)));
+                    b(j) = -Q*h - k/h * cbd_i - (1/2)*v * cbd_i + temp_t(j,i)*h/dt + ant1;%Parte de la actual mas parte del tiempo anterior
                 else
                     if (cbn_i ~= -1)
                         %Condicion Neumann
-                        b(j) = -Q*h  - k*cbn_i - v * (-1*(h/2)*cbn_i)+ temp_t(j,i)*h/dt + 1/2*temp_t(j,i)*( - k*cbn_i - v * (-1*(h/2)*cbn_i));%el termino advectivo actua en la direccion de la cara
+                        ant2= -1/2*( -v*(cbn_i*(-h/2)+temp_t(j,i))  - k*cbn_i + (v/2)*(temp_t(j,i)+temp_t(j+1,i)) - (k/h)*(temp_t(j+1,i)-temp_t(j,i)));
+                        b(j) = -Q*h  - (1/2)*(-k*cbn_i - v*(-1*(h/2)*cbn_i))+ temp_t(j,i)*h/dt + ant2;%el termino advectivo actua en la direccion de la cara
                     else
                         %Condicion Mixta
-                        b(j) = -Q*h- v*cm_finf*(cm_h)/((2*cm_k/h)+cm_h) - k*2*cm_h*cm_finf/(2*cm_k+cm_h*h) + temp_t(j,i)*h/dt + 1/2*temp_t(j,i)*(- v*cm_finf*(cm_h)/((2*cm_k/h)+cm_h) - k*2*cm_h*cm_finf/(2*cm_k+cm_h*h));
+                        difer= 2*cm_h*cm_finf/(2*cm_k+cm_h*h) + (4*cm_k*temp(j,i))/(2*h*cm_k+cm_h*h^2) - 2*temp(j,i)/h;
+                        ant3= -1/2*(-v*(cm_h*cm_finf+(2*cm_k/h)*temp(j,i))/((2*cm_k/h)+cm_h)  - k*difer  - k*cbn_i + (v/2)*(temp_t(j,i)+temp_t(j+1,i)) - (k/h)*(temp_t(j+1,i)-temp_t(j,i)));
+                        b(j) = -Q*h - (1/2)*(-v*cm_finf*(cm_h)/((2*cm_k/h)+cm_h) - k*2*cm_h*cm_finf/(2*cm_k+cm_h*h)) + temp_t(j,i)*h/dt + ant3;
                     end
                 end
             case cant_celdas
                 %Caso ultima celda
                 if (cbd_d ~= -1)
                     %Condicion Dirichlet
-                    b(j) = -Q*h  - 2*k/h * cbd_d + v * cbd_d + temp_t(j,i)*h/dt + 1/2*temp_t(j,i)*( - 2*k/h * cbd_d + v * cbd_d);
+                    ant1= -1/2*(-(v/2)*(temp_t(j-1,i)+temp_t(j,i)) - (k/h)*(temp_t(j-1,i)-temp_t(j,i)) + v * cbd_d  - (2*k/h)*(cbd_d -temp_t(j,i)));
+                    b(j) = -Q*h  - k/h * cbd_d + (1/2)*v*cbd_d + temp_t(j,i)*h/dt + ant1;
                 else
                     if (cbn_d ~= -1)
                         %Condicion Neumann
-                        b(j) = -Q*h - k*cbn_d + v * (1*(h/2)*cbn_d) + temp_t(j,i)*h/dt + 1/2*temp_t(j,i)*(- k*cbn_d + v * (1*(h/2)*cbn_d));%el termino advectivo actua en la direccion de la cara
+                        ant2= -1/2*(-(v/2)*(temp_t(j-1,i)+temp_t(j,i)) - (k/h)*(temp_t(j-1,i)-temp_t(j,i)) + v*(cbn_d*(h/2)+temp_t(j,i)) - k*cbn_d );
+                        b(j) = -Q*h - (1/2)*(-k*cbn_d + v*(1*(h/2)*cbn_d)) + temp_t(j,i)*h/dt + ant2;%el termino advectivo actua en la direccion de la cara
                     else
                         %Condicion Mixta
-                        b(j) = -Q*h + v*cm_finf*(cm_h)/((-2*cm_k/h)+cm_h) - k*(-2*cm_h*cm_finf/(2*cm_k+cm_h*h)) + temp_t(j,i)*h/dt + 1/2*temp_t(j,i)*(+ v*cm_finf*(cm_h)/((-2*cm_k/h)+cm_h) - k*(-2*cm_h*cm_finf/(2*cm_k+cm_h*h)));
+                        difer2= 2*temp_t(j,i)/h - (4*cm_k*temp_t(j,i))/(2*h*cm_k+cm_h*h^2) - (2*cm_k*cm_finf)/(2*cm_k+cm_h*h);
+                        ant3= -1/2*(-v*(cm_h*cm_finf+(2*cm_k/h)*temp(j,i))/((2*cm_k/h)+cm_h) - k*difer2  - k*cbn_i + (v/2)*(temp_t(j,i)+temp_t(j-1,i)) - (k/h)*(temp_t(j-1,i)-temp_t(j,i)));
+                        b(j) = -Q*h  (1/2)*(v*cm_finf*(cm_h)/((-2*cm_k/h)+cm_h) - k*(-2*cm_h*cm_finf/(2*cm_k+cm_h*h))) + temp_t(j,i)*h/dt + ant3;
                     end
                 end
             otherwise
                 %celdas interna
-                b(j) = -Q*h + temp_t(i)*h/dt;
+                ant4= -1/2*(-(v/2)*(temp_t(j-1,i)+temp_t(j,i)) - (k/h)*(temp_t(j-1,i)-temp_t(j,i)) + (v/2)*(temp_t(j+1,i)+temp_t(j,i)) - (k/h)*(temp_t(j+1,i)-temp_t(j,i)));
+                b(j) = -Q*h + temp_t(i)*h/dt + ant4;
         end
     end
     %Resolucion del sistema
     temp=A\b;
     temp_t = [temp_t(:,:), temp(:)];
-    
 end
 
 %plot(temp_t);

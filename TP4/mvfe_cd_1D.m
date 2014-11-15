@@ -13,17 +13,17 @@ h = L/cant_celdas;%distancia que separa las celdas (si son regulares)
 k = -1;%Constante de difusividad
 Q = -1;%fuente
 v = -100;%velocidad
-cm_h = 1;%h de la condicion mixta
+cm_h = 10;%h de la condicion mixta
 cm_k = 1;%k de la condicion mixta si la hay
 cm_finf = 1;%temperatura externa fi inf
 
 %Definicion de las condiciones de borde (-1 significa que no aplica)
-cbd_i = -1;%condicion de borde dirichlet izquierda
+cbd_i = 0;%condicion de borde dirichlet izquierda
 cbd_d = -1;%condicion de borde dirichlet derecha
 cbn_i = -1;%condicion de borde neumann izquierda
-cbn_d = 1;%condicion de borde neumann derecha
-cbm_i = 1;%condicion de borde mixta izquierda %cualquier numero distinto de -1 la activa
-cbm_d = -1;%condicion de borde mixta derecha
+cbn_d = -1;%condicion de borde neumann derecha
+cbm_i = -1;%condicion de borde mixta izquierda %cualquier numero distinto de -1 la activa
+cbm_d = 1;%condicion de borde mixta derecha
 
 %Matriz del lado derecho (todos los terminos que tienen incognitas fi)
 A = zeros(cant_celdas,cant_celdas);
@@ -61,8 +61,8 @@ for i = 1:cant_celdas
                 else
                     %Condicion Mixta
                     difer2= 2/h - 4*cm_k/(2*h*cm_k+cm_h*h^2);
-                    A(i,i) = v*(2*cm_k/h)/((-2*cm_k/h) + cm_h) + k*difer2 + v * 1/2 - k/h;
-                    A(i,i+1) = v * 1/2 + k/h;
+                    A(i,i) = v*(2*cm_k/h)/((2*cm_k/h) + cm_h) + k*difer2 + v * 1/2 - k/h;
+                    A(i,i-1) = v * 1/2 - k/h;
                 end
             end
         otherwise
@@ -105,7 +105,7 @@ for i = 1:cant_celdas
                     b(i) = -Q*h - k*cbn_d + v * (1*(h/2)*cbn_d);%el termino advectivo actua en la direccion de la cara
                 else
                     %Condicion Mixta
-                    b(i) = -Q*h + v*cm_finf*(cm_h)/((-2*cm_k/h)+cm_h) - k*(-2*cm_h*cm_finf/(2*cm_k+cm_h*h)) ;
+                    b(i) = -Q*h + v*cm_finf*(cm_h)/((2*cm_k/h)+cm_h) - k*(-2*cm_h*cm_finf/(2*cm_k+cm_h*h)) ;
                 end
             end
         otherwise
@@ -117,4 +117,4 @@ end
 %Resolucion del sistema
 temp=A\b;
 
-%plot(temp);
+plot(temp);

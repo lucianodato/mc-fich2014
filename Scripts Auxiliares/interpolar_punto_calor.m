@@ -1,7 +1,7 @@
 %codigo para el calculo de temperaturas especificadas en un punto a partir de
 %un sistema ya calculado y con valores en los nodos conocidos
 syms x y;
-punto_calculo = [0.75,0.75];
+punto_calculo = [1.5,0.75];
 
 %Tabla con valores cargados
 % coordenada x - coordenada y - temperatura en el nodo
@@ -87,7 +87,11 @@ if(elemento_c ~=-1)
     N3p = subs(N3,[x y],[punto_calculo(1),punto_calculo(2)]);
     N4p = subs(N4,[x y],[punto_calculo(1),punto_calculo(2)]);
     
-    valor_temperatura = t1p*N1p + t2p*N2p + t3p*N3p + t4p*N4p;    
+    if(N1p+N2p+N3p+N4p == 1)
+        valor_temperatura = t1p*N1p + t2p*N2p + t3p*N3p + t4p*N4p;
+    else
+        disp('Algo esta mal, las funciones de forma no suman 1');
+    end
 end
 
 
@@ -120,5 +124,9 @@ if(elemento_t ~=-1)
     N2p = subs(N2,[x y],[punto_calculo(1),punto_calculo(2)]);
     N3p = subs(N3,[x y],[punto_calculo(1),punto_calculo(2)]);
     
-    valor_temperatura = t1p*N1p + t2p*N2p + t3p*N3p;
+    if(N1p+N2p+N3p == 1)
+        valor_temperatura = t1p*N1p + t2p*N2p + t3p*N3p;
+    else
+        disp('Algo esta mal, las funciones de forma no suman 1');
+    end
 end

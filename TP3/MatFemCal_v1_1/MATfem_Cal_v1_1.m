@@ -24,18 +24,18 @@ clear
 %               nodal loads.
 
 %Mixed Load Conditions initialization %@ Agregado
-mixload = [];
+mixload = [];%nodo 1 - nodo 2 - fi_ref - h_mix - elemento de los nodos
 % mixload = [ 17   ,  10  , 30.00000 , 1.2 , 16;
 %             10   ,   5  , 30.00000 , 1.2 , 15;
 %              5   ,   2  , 30.00000 , 1.2 , 14;
 %              2   ,   1  , 30.00000 , 1.2 , 13];%Manual completition
 
 %Nodal heat source %@ Agregado
-midpointheat = [];
+midpointheat = [];% coordenada 1 - coordenada 2 - temperatura aportada - elemento de punto
 %midpointheat = [1,1,5,1];
 
 %Transient Flag %@ Agregado
-transient = 0;
+transient = 0;% para activar el caso no estacionario
 
 
 if (transient == 1) %@ Agregado

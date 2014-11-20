@@ -12,7 +12,7 @@ function [M] = QdStifCalmix (h,node_i,node_j,nu_node)
 
 l = sqrt((node_i(1)-node_j(1))^2 + (node_i(2)-node_j(2))^2);
 
-%matrix that represents the mixsiload for this element using only form
+%matrix that represents the mixload for this element using only form
 %functions involved
 switch nu_node
     case 1 % i y j = 0

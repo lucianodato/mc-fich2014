@@ -29,13 +29,13 @@ clear
 %syms x y;
 %x_function = (25000/2) * x - 10000.0; 
 %y_function = y - 10.0; 
-variablesideload = [];
+variablesideload = [];%nodo 1 - nodo 2 - x force function - y force function - element
 % variablesideload = [
 % 3 , 1 , 0.00000 , x_function, 5;
 % 7 , 3 , 0.00000 , x_function, 6];
 
 %Midpoint forces filling
-midpointload = [];
+midpointload = []; %coord x - coord y - x force - y force - element
 %midpointload = [0.5 , 1.5 ,-1000.0 , 1000.0 , 5];
   
 %Carga de archivo

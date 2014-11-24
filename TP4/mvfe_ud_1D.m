@@ -18,12 +18,12 @@ cm_k = 1;%k de la condicion mixta si la hay
 cm_finf = 1;%temperatura externa fi inf
 
 %Definicion de las condiciones de borde (-1 significa que no aplica)
-cbd_i = 0;%condicion de borde dirichlet izquierda
+cbd_i = -1;%condicion de borde dirichlet izquierda
 cbd_d = -1;%condicion de borde dirichlet derecha
 cbn_i = -1;%condicion de borde neumann izquierda
-cbn_d = -1;%condicion de borde neumann derecha
-cbm_i = -1;%condicion de borde mixta izquierda %cualquier numero distinto de -1 la activa
-cbm_d = 1;%condicion de borde mixta derecha
+cbn_d = 1;%condicion de borde neumann derecha
+cbm_i = 1;%condicion de borde mixta izquierda %cualquier numero distinto de -1 la activa
+cbm_d = -1;%condicion de borde mixta derecha
 
 %Matriz del lado derecho (todos los terminos que tienen incognitas fi)
 A = zeros(cant_celdas,cant_celdas);

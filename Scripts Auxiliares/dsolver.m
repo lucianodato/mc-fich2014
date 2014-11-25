@@ -2,7 +2,7 @@
 syms y(t)
 Dy = diff(y);
 Dy_2 = diff(y,2);
-%Acá remplazmos con la ecuación.
+%Aca remplazmos con la ecuacion.
 s = dsolve(100*Dy - Dy_2  - 1  == 0, y(0) == 0, Dy(1) == 1);
 %Ploteamos la func.
 hold on;

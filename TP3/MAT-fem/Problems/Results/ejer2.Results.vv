@@ -1,12 +1,12 @@
 BeginZE /media/Disco/Informatica/Mecanica Computacional/Practicas/mc-fich2014/TP3/MAT-fem/Problems/Results/ejer2.Results.vv
-   x -20.7109165191650391 28.7109165191650391
-   y 21.2743568420410156 -1.27435588836669922
-   z -33.8230667114257812 33.8230667114257812
+   x -8.57009696960449219 12.6107387542724609
+   y 20.8120880126953125 11.1483240127563477
+   z -21.4723949432373047 21.4723949432373047
    e 11.2743558883666992
    v 0 0 0
    r 1
    m 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
-   c 4 10 0
+   c 2 20 0
    pd 0
    pno 0
    pfo 0
@@ -59,6 +59,6 @@ BeginSingleMesh
   EndSet: 0
 EndSingleMesh
   Post_Prefs_Vector_Size: 0 32 32 32
-  ResultView: {Id 8} {Display Vectors} Load_Analysis 1.0 Displacements |Displacements| 3247.452392578125 4 0
+  ResultView: {Id 9} {Display Vectors} Load_Analysis 1.0 Displacements |Displacements| 3247.452392578125 4 0
 EndPostState
 

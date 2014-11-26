@@ -1,5 +1,5 @@
 cant = 5;
-t_max = 0.012;
+t_max = 0.01;
 t_ini=0;
 dt=0.002;
 phi0=0;
@@ -39,4 +39,4 @@ for i=1:cant_pasos_tiempo
 end
 
 plot(temp_t);
-legend('t0','t1','t2','t3','t4','t5','t6');
+legend('t0','t1','t2','t3','t4','t5');
